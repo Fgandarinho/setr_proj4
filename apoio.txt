@@ -1,0 +1,26 @@
+
+/*função que inicializa a estruitua do estado dos butões*/
+void initStateButs(void);
+
+/*função que atualiza o estado dos botões a RTDB*/
+void writeButsInRtdb(struct state_but bt);
+
+
+
+
+/*inicializar a estrutura para os estado dos botões na RTDB*/
+static struct state_but butRtdb;
+
+/*função que inicializa o estado dos botoes*/
+void initStateButs(void)
+{
+ 
+   
+}
+
+void writeButsInRtdb(struct state_but bt)
+{
+
+
+}
+
