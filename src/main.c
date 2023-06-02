@@ -214,7 +214,7 @@ static void uart_cb(const struct device *dev, struct uart_event *evt, void *user
                 //printk("\n..........string terminada com ENTER \n");
                 rx_chars[uart_rxbuf_nchar++] = 0;                 /* Terminate the string na seguinte posição */
                 uart_rxbuf_nchar = 0;                           /*Reset ao ponteiro do buffer*/
-                printk("Acordei\n\r");
+                //printk("Acordei\n\r");
                 k_thread_resume(thread_C_tid);          //adorda p thread que vai ler o buffer e processar a sua informação
                               
             }else{
@@ -252,8 +252,9 @@ static void uart_cb(const struct device *dev, struct uart_event *evt, void *user
     }
 
 }// FIM DE static void uart_cb(const struct device *dev, struct uart_event *evt, void *user_data)
+
 /**
- * Função que configura os IO's e suas i
+ * Função que configura os IO's
 */
 void ioConfig()
 {
@@ -430,13 +431,14 @@ void usartConfig()
 */
 void i2cConfig()
 {
-
+    
+  
 	if (!device_is_ready(dev_i2c.bus)) 
 	{
 		printk("I2C bus %s is not ready!\n\r",dev_i2c.bus->name);
 		return;
 	}
-
+  
 
 
 }// fim de void i2cConfig()
@@ -444,32 +446,29 @@ void i2cConfig()
 /* Main function */
 void main(void) 
 {
-    
-   
-
     printk("\n ################################### \n\r ");
     printk("######## Smart I/O Module ######### \n\r ");
     printk("################################### \n\r ");
     printk(" SMS_Terminal:\n\r ");
-    printk(" Global Format -> [#][d;a][w;r][num_device][value][CS][!]\n\r ");
-    printk(" Ex_1-> #dw00;! ->Led0_OFF\n\r ");
-    printk(" Ex_2-> #dw01<! ->Led0_ON\n\r ");
-    printk(" Ex_3-> #dw10<! ->Led1_OFF\n\r ");
-    printk(" Ex_4-> #dw11=! ->Led1_ON\n\r ");
-    printk(" Ex_5-> #dw20=! ->Led2_OFF\n\r ");
-    printk(" Ex_6-> #dw21>! ->Led2_ON\n\r ");
-    printk(" Ex_7-> #dw30>! ->Led3_OFF\n\r ");
-    printk(" Ex_8-> #dw31?! ->Led4_ON\n\r ");
-    printk(" Ex_9-> #dr006! ->Staus_Bot_0\n\r ");
-    printk(" Ex_10-> #dr107! ->Staus_Bot_0\n\r ");
-    printk(" Ex_11-> #dr208! ->Staus_Bot_0\n\r ");
-    printk(" Ex_12-> #dr309! ->Staus_Bot_0\n\r ");
-    printk(" Ex_13-> #ar003! ->View_Temp.& St.Point\n\r ");
-    printk(" Ex_14-> #aw370! ->Write temp=37\n\r");
-    printk(" Ex_15-> #a! ->ReadAll\n\r");
-
-
-    printk("################################### \n\n\r ");
+    printk(" Global Format -> [#][d;a;t][w;r;a][num_device][value][CS][!]\n\r ");
+    printk(" Ex_1->  #dw00;!   ->Led0_OFF\n\r ");
+    printk(" Ex_2->  #dw01<!   ->Led0_ON\n\r ");
+    printk(" Ex_3->  #dw10<!   ->Led1_OFF\n\r ");
+    printk(" Ex_4->  #dw11=!   ->Led1_ON\n\r ");
+    printk(" Ex_5->  #dw20=!   ->Led2_OFF\n\r ");
+    printk(" Ex_6->  #dw21>!   ->Led2_ON\n\r ");
+    printk(" Ex_7->  #dw30>!   ->Led3_OFF\n\r ");
+    printk(" Ex_8->  #dw31?!   ->Led4_ON\n\r ");
+    printk(" Ex_9->  #dr006!   ->Staus_Bot_0\n\r ");
+    printk(" Ex_10-> #dr107!   ->Staus_Bot_1\n\r ");
+    printk(" Ex_11-> #dr208!   ->Staus_Bot_2\n\r ");
+    printk(" Ex_12-> #dr309!   ->Staus_Bot_3\n\r ");
+    printk(" Ex_13-> #ar003!   ->View_Temp.& St.Point\n\r ");
+    printk(" Ex_14-> #aw370!   ->Write temp=37\n\r ");
+    printk(" Ex_15-> #ad997!   ->ReadAll\n\r ");
+    printk(" Ex_16-> #ta1351>! ->threadA com Periodo 1351\n\r ");
+    printk(" Ex_17-> #tt99999! ->ReadAllPeriodTreads\n\r" );
+    printk("###################################\n\n\r");
 
 
      /*iniciar a estrutura local dos botões a FALSE*/
@@ -484,9 +483,9 @@ void main(void)
        initStateLeds();         /*inicialização do estado dos LEDS na RTDB*/
        ioConfig();              /*configura e inicializa os IOS Interupts e callbacks*/ 
        usartConfig();          /*configura e inicializa a usart com interrupts e callback*/
-       initMsnBuffer();         /*inicaliza o buffer para armazenar as sms escrita pelo teclado*/
        i2cConfig();             /*configura e inicializa a comunicação I2C com o TC74*/
-       initTempInRtdb();
+       initTempInRtdb();        /*Inicializar o setpoint e a temp com valores conhecidos*/
+       initPeridosTheads(thread_A_period,thread_B_period,thread_C_period,thread_D_period);      /*copia os periodos por defeito dos defines para a estrutura*/
 
     /*Criar o thread -> atualiza a RTDB com o estado dos Botões*/
     thread_A_tid = k_thread_create(&thread_A_data, thread_A_stack,
@@ -521,23 +520,23 @@ void thread_A_code(void *argA , void *argB, void *argC)
     int64_t fin_time=0, release_time=0;     /* Timing variables to control task periodicity */
     
     /* Task init code */
-    printk("Thread de atualizacao das RTDB com os estado dos inputs-> Botões\n\r");
+    printk("Thread de atualizacao da RTDB com os estado dos inputs-> Botões\n\r");
     
     /* Compute next release instant */
-    release_time = k_uptime_get() + thread_A_period;
+    release_time = k_uptime_get() + readPeriodThread('a');
 
     /* Thread loop */
     while(1) 
-    {        
-         /*actualiza a rtdb com o estado atual dos botões*/
-            writeButsInRtdb(but);
+    {    
+        /*actualiza a rtdb com o estado atual dos botões*/
+        writeButsInRtdb(but);
        
         /* Wait for next release instant */ 
         fin_time = k_uptime_get();
         if( fin_time < release_time)
          {
             k_msleep(release_time - fin_time);
-            release_time += thread_A_period;
+            release_time += readPeriodThread('a');
 
         }
     }
@@ -558,14 +557,14 @@ void thread_B_code(void *argA , void *argB, void *argC)
     int64_t fin_time=0, release_time=0;     /* Timing variables to control task periodicity */
     struct state_led ret;
     /* Task init code */
-    printk("Thread de atualizacao dos LEDs mediate as infos da RTDB \n\r");
+    printk("Thread de atualizacao dos LEDs mediante as infos da RTDB \n\r");
     
     /* Compute next release instant */
-    release_time = k_uptime_get() + thread_B_period;
+    release_time = k_uptime_get() + readPeriodThread('b');
 
     /* Thread loop */
     while(1) 
-    {        
+    {     //printk("thread_B\n\r");      
          /*actualiza a os estado atual dos LEDS -> Saidas com a informação presente na RTDB*/
          ret=writeLedsInRtdb();                     /*Lê RTDB e atualiza as saídas fisicas(LEDs) com esse valor*/
          gpio_pin_set_dt(&led0_dev,ret.n0);
@@ -579,7 +578,7 @@ void thread_B_code(void *argA , void *argB, void *argC)
         if( fin_time < release_time)
          {
             k_msleep(release_time - fin_time);
-            release_time += thread_B_period;
+            release_time += readPeriodThread('b');
 
         }
     }
@@ -588,28 +587,22 @@ void thread_B_code(void *argA , void *argB, void *argC)
     timing_stop();
 }//fim de void thread_B_code(void *argA , void *argB, void *argC)
 
+
 /**
  *  Thread_C ->code implementation
- * Este thread é responsável Ler o buffer da usart e atuar mediante as sms recebidas
+ * Thread_C leitura e execução das SMS vindas do utilizador
  * 
   */
 void thread_C_code(void *argA , void *argB, void *argC)
 {
-    /* variaveis locauis */
-   // int64_t fin_time=0, release_time=0;     /* Timing variables to control task periodicity */
+  
     int ret=0;
      /* Task init code */
-    printk("Thread Execucao das leitiuras(botpes) e escritas(leds) SMS do utilizador \n\r");
+    printk("Thread_C leitura e execução das SMS vindas do utilizador \n\r");
     
-    /* Compute next release instant */
-   // release_time = k_uptime_get() + thread_B_period;
-//rx_buf[RXBUF_SIZE];      /* RX buffer, to store received data */
-//rx_chars[RXBUF_SIZE];    /* chars actually received  */
-
     /* Thread loop */
     while(1) 
-    {        
-         printk("Suspendi\n\r");  
+    {    
           k_thread_suspend(thread_C_tid);       //suspend o thread_c, vai ser acordado pela interrupt da usart ao pressionar enter
            
          /*codido da thread_C*/
@@ -634,18 +627,21 @@ void thread_C_code(void *argA , void *argB, void *argC)
 }//fim de void thread_B_code(void *argA , void *argB, void *argC)
 
 
-
+/**
+ * Thread_D
+ * Este Thread tem como objetivo atualizar periodicamete a RTDB com as informações do
+ * Sensor TC47 que comunica por I2C
+*/
 void thread_D_code(void *argA , void *argB, void *argC)
 {
     /* variaveis locauis */
     int64_t fin_time=0, release_time=0;     /* Timing variables to control task periodicity */
     
     /* Task init code */
-    printk("Thread de atualizacao da temperatura na RTDB mediante sensor\n\r");
+    printk("Thread_C de atualizacao da temperatura na RTDB mediante sensor_TC47\n\r");
     
     /* Compute next release instant */
-    release_time = k_uptime_get() + thread_D_period;
-
+    release_time = k_uptime_get() + readPeriodThread('d');
     
     int ret;
     uint8_t config = 0x00;
@@ -653,7 +649,7 @@ void thread_D_code(void *argA , void *argB, void *argC)
     
     /* Thread loop */
     while(1) 
-    {        
+    {   //printk("thread_D\n\r");        
        
 		ret = i2c_write_dt(&dev_i2c, &config, sizeof(config));
 		if(ret != 0)
@@ -675,7 +671,7 @@ void thread_D_code(void *argA , void *argB, void *argC)
         if( fin_time < release_time)
          {
             k_msleep(release_time - fin_time);
-            release_time += thread_D_period;
+            release_time += readPeriodThread('d');
         }
     }
 

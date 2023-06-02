@@ -32,15 +32,6 @@ struct state_led
     _Bool busy;
 };
 
-/*estrutura que armazena as mensagens vindas do teclado USART*/
-struct msn
-{
-    unsigned char buffer [BUFF_NUM_MAX_MSN] [LENGTH_MAX_MSN];
-    int tail;
-    int head;
-    int count;
-};
-
 /**
  * Estrutura que armazena a temperatura lida pelo sensor TC47
  * E armazena o SetPoint defenido pelo utilizador
@@ -50,6 +41,18 @@ struct temp
 {
     int graus;
     unsigned char set_point;
+
+};
+
+/**
+ * Estrutura que armazema os valores dos periodos dos threads
+ * Estes valores são apresentados/escritos em ms-> miliSegundos
+*/
+struct periodo
+{
+    unsigned int thread_A;
+    unsigned int thread_B;
+    unsigned int thread_D;
 
 };
 
@@ -107,7 +110,29 @@ void writeTempInRtdb(unsigned char *data);
  * Esta função é invocada pela trhead_C 
 */
 void writeSetPointTempInRtdb(unsigned char *data);
+/**
+ * Inicia a estrutura com os perido dos threads defenidos no mais no #defines
+ * parametros de entrada 
 
+*/
+void initPeridosTheads(int a, int b, int c, int d);
+
+
+/**
+ * Lê os peridos dos trheas existentes na RTDB e devolve o se valor na main()
+ * entrada o nome do thread a considerar
+ * saida o valor do perido do tread sinalizado no parametor de entrada valor armaenado na RTDB
+*/
+unsigned int readPeriodThread(unsigned char letra_do_thread);
+
+
+/**
+ * Escreve na RTDB novos valores para os Periodos das threads
+ * Parametro de entrada
+ * nome da thread; valor do Periodo
+ *  
+*/
+void writPeriodThread(unsigned char letra_do_thread, unsigned int value_periodo);
 
 #endif
 
