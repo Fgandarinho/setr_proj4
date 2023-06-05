@@ -478,6 +478,7 @@ void main(void)
        but.n3=false;
        but.busy=false;
 
+
        /*inicializa a estrututura de dados para os botões em rtdb*/
        initStateButs();         /* inicaliação do estdo dos botões na RTDB*/
        initStateLeds();         /*inicialização do estado dos LEDS na RTDB*/
@@ -485,7 +486,7 @@ void main(void)
        usartConfig();          /*configura e inicializa a usart com interrupts e callback*/
        i2cConfig();             /*configura e inicializa a comunicação I2C com o TC74*/
        initTempInRtdb();        /*Inicializar o setpoint e a temp com valores conhecidos*/
-       initPeridosTheads(thread_A_period,thread_B_period,thread_C_period,thread_D_period);      /*copia os periodos por defeito dos defines para a estrutura*/
+       initPeridosTheads(thread_A_period,thread_B_period,thread_D_period);      /*copia os periodos por defeito dos defines para a estrutura*/
 
     /*Criar o thread -> atualiza a RTDB com o estado dos Botões*/
     thread_A_tid = k_thread_create(&thread_A_data, thread_A_stack,

@@ -80,7 +80,7 @@ int readSmsInBuf(unsigned char *ptr_sms, int buf_size)
         printk("%c,",buf_local[i]);
         ptr_sms++;
     }
-    //CS = buf_local[indx_SOF+1]+buf_local[indx_SOF+2]+buf_local[indx_SOF+3]+buf_local[indx_SOF+4];
+    /*CS = buf_local[indx_SOF+1]+buf_local[indx_SOF+2]+buf_local[indx_SOF+3]+buf_local[indx_SOF+4];*/
     printk("-> %c\n\r",CS);
     
         /*Encontrar o indice de EOF e o SOF*/
@@ -116,6 +116,11 @@ int readSmsInBuf(unsigned char *ptr_sms, int buf_size)
 		        }
 		    } 
          
+         if(indx_EOF-indx_SOF < 6)          /*Se tiver menos de 6 caracteres identifica-se como vazia*/
+		 {
+			return Err_Empty_str;
+	     } 
+
         /*No caso das sms de 6 caracteres verificar se tem os caracteres todos*/
          if(buf_local[indx_SOF+1] == 'd' || buf_local[indx_SOF+1] == 'a')
          {
@@ -193,9 +198,7 @@ int readSmsInBuf(unsigned char *ptr_sms, int buf_size)
                             }
                     }
 
-                        /**/
-
-                }//if(buf_local[indx_SOF+2] == 'w')
+                }/*if(buf_local[indx_SOF+2] == 'w')*/
 
                     
                 /* r command detected -> LER a RTDB e atualizar a informação para o utilizador */     
@@ -242,9 +245,9 @@ int readSmsInBuf(unsigned char *ptr_sms, int buf_size)
                                 }    
                     }               
 
-                } //if(buf_local[indx_SOF+2] == 'r')
+                } /*if(buf_local[indx_SOF+2] == 'r')*/
 
-        } //if(buf_local[indx_SOF+1]=='d')        
+        } /*if(buf_local[indx_SOF+1]=='d')*/        
 
         /* a command detected -> LER a RTDB e atualizar a informação para o utilizador */     
         if(buf_local[indx_SOF+1]=='a')
@@ -257,14 +260,14 @@ int readSmsInBuf(unsigned char *ptr_sms, int buf_size)
 
                     /* w command detected -> recebe a info do utilizador e atualiza a RTDB */ 
                    
-                if(buf_local[indx_SOF+2] == 'w' ) // comand w && valor inserido está entre [00 - 99]
+                if(buf_local[indx_SOF+2] == 'w' ) /* comand w && valor inserido está entre [00 - 99]*/
                 {
                     
                     unsigned char unid, dec, temp;
                     unid= buf_local[indx_SOF+4]-48;
                     dec= buf_local[indx_SOF+3]-48;
                     temp=dec*10+unid;
-                    if(temp>=0 && temp<=99 )
+                    if(temp<=99 )
                     {
                         writeSetPointTempInRtdb(&temp); 
                         printk("SetPoint inserida:%d\n\r",temp); 
@@ -318,9 +321,9 @@ int readSmsInBuf(unsigned char *ptr_sms, int buf_size)
 
 
        return ret;
-}//fim de int readSmsInBuf(void)
+}/*fim de int readSmsInBuf(void)*/
 
-void initTempInRtdb()
+void initTempInRtdb(void)
 {
     temperatura.graus=0;
     temperatura.set_point=0;
@@ -332,7 +335,7 @@ void initTempInRtdb()
 */
 void writeTempInRtdb(unsigned char *data)
 {
-   //printk("Temperature Reading a armazenada a RTDB: %d\n",*data);
+   /*printk("Temperature Reading a armazenada a RTDB: %d\n",*data);*/
    temperatura.graus=*data;
 }
 
@@ -346,7 +349,7 @@ void writeSetPointTempInRtdb(unsigned char *data)
 }
 
 
-void initPeridosTheads(int a, int b, int c, int d)
+void initPeridosTheads(int a, int b, int d)
 {
     period.thread_A=a;
     period.thread_B=b;
@@ -355,7 +358,7 @@ void initPeridosTheads(int a, int b, int c, int d)
 
 unsigned int readPeriodThread(unsigned char name_do_thread)
 {
-        unsigned int ret;                       
+        unsigned int ret='x';                       
         if(name_do_thread=='a')
         {
            ret = period.thread_A;     
@@ -398,4 +401,4 @@ void writPeriodThread(unsigned char name_do_thread, unsigned int value_periodo)
                     }
             } 
 
-}//fim de void writPeriodThread(unsigned char name_do_thread, unsigned int value_periodo)
+}/*fim de void writPeriodThread(unsigned char name_do_thread, unsigned int value_periodo)*/

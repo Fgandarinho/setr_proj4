@@ -13,6 +13,7 @@
 #define Err_str_format -4
 #define Err_val_temperature -5
 
+
 /*estrutura que contem o estado dos botoes*/
 struct state_but
 {
@@ -22,6 +23,7 @@ struct state_but
     _Bool n3;
     _Bool busy;
 };
+
 /*estrutura para armaenar o estado dos Leds*/
 struct state_led
 {
@@ -94,7 +96,7 @@ int readSmsInBuf(unsigned char *ptr_sms, int buf_size);
  * Inicializa a estrutura referida ao Buffer
  * Invocada no inicio do main
 */
-void initTempInRtdb();
+void initTempInRtdb(void);
 
 
 
@@ -115,7 +117,7 @@ void writeSetPointTempInRtdb(unsigned char *data);
  * parametros de entrada 
 
 */
-void initPeridosTheads(int a, int b, int c, int d);
+void initPeridosTheads(int a, int b, int d);
 
 
 /**
