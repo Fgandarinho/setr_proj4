@@ -1,3 +1,14 @@
+/**
+ * @file rtdb.c
+ * 
+ * @brief Real Time Data Base code
+ * 
+ * @version 1.0
+ * 
+ * @date 2021-06-06
+ * 
+ * @author Fernando Gandarinho e Tomás Silva
+*/
 #include "rtdb.h"                 
 #include <zephyr/sys/printk.h>
 #include <inttypes.h>
@@ -31,7 +42,7 @@ void initStateLeds(void)
     ledRtdb.n3=1;
     ledRtdb.busy=0;
 }
-/**
+/*
  * Actulisa a estrura butRtdb do exterior para a rtdb
 */
 void writeButsInRtdb(struct state_but bt)
@@ -61,7 +72,7 @@ void writeButsInRtdb(struct state_but bt)
 }
 
 
-/**
+/*
  * Lê as mensagens no buffer e executa-as
  * Não é necessário nenhum parametro de entrada pois os Buffer esté criado dentro dete módulo rtdb.c/rtdb.h
  * Saidas:  *Valid ->0 || Err_Empty_str ->1 || Err_Invalid_cmd -> -2 || Err_CS ->-3 || Err_str_format -> -4
@@ -329,7 +340,7 @@ void initTempInRtdb(void)
     temperatura.set_point=0;
 }
 
-/**
+/*
  * Função que escreve na estrutura da tempertaura a temperatura do sensor
  * Função incocada pela thread_D
 */
@@ -339,7 +350,7 @@ void writeTempInRtdb(unsigned char *data)
    temperatura.graus=*data;
 }
 
-/**
+/*
  * Função que escreve na estrutura da tempertaura o SetPoint vindo do utilizador
  * Função incocada pela thread_C
 */

@@ -1,0 +1,216 @@
+\hypertarget{rtdb_8c}{}\doxysection{/home/tomas/\+Desktop/\+SETR/setr\+\_\+proj4/src/rtdb/rtdb.c File Reference}
+\label{rtdb_8c}\index{/home/tomas/Desktop/SETR/setr\_proj4/src/rtdb/rtdb.c@{/home/tomas/Desktop/SETR/setr\_proj4/src/rtdb/rtdb.c}}
+
+
+Real Time Data Base code.  
+
+
+{\ttfamily \#include \char`\"{}rtdb.\+h\char`\"{}}\newline
+{\ttfamily \#include $<$zephyr/sys/printk.\+h$>$}\newline
+{\ttfamily \#include $<$inttypes.\+h$>$}\newline
+Include dependency graph for rtdb.\+c\+:
+% FIG 0
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{rtdb_8c_a09494414976f8ffc2888ff89849223b4}{init\+State\+Buts}} (void)
+\begin{DoxyCompactList}\small\item\em Função que inicializa a estrutura do estado dos botões. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{rtdb_8c_a523800cab8b8cbfa2f959cd3b4529a46}{init\+State\+Leds}} (void)
+\begin{DoxyCompactList}\small\item\em Função que inicializa a estrutura do estado dos LEDS. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{rtdb_8c_ab4e036e4e50517f43eb931dba0feb481}{write\+Buts\+In\+Rtdb}} (struct \mbox{\hyperlink{structstate__but}{state\+\_\+but}} bt)
+\begin{DoxyCompactList}\small\item\em Função que atualiza o estado dos botões na RTDB. \end{DoxyCompactList}\item 
+struct \mbox{\hyperlink{structstate__led}{state\+\_\+led}} \mbox{\hyperlink{rtdb_8c_a04f2df0ec4e1d8846f0794c5797cb459}{write\+Leds\+In\+Rtdb}} (void)
+\begin{DoxyCompactList}\small\item\em Função que atualiza o estado dos LEDs na RTDB. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{rtdb_8c_a434d32f7a7a32afc7d4834b316f438f0}{read\+Sms\+In\+Buf}} (unsigned char $\ast$ptr\+\_\+sms, int \mbox{\hyperlink{testrtdb_8c_a0a2db73dd34295ca22b759dde70c1a40}{buf\+\_\+size}})
+\begin{DoxyCompactList}\small\item\em Função que processa os comandos. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{rtdb_8c_a47113cdf8adb2fc268e99bab073dc761}{init\+Temp\+In\+Rtdb}} (void)
+\begin{DoxyCompactList}\small\item\em Inicialização do sensor de temperatura na RTDB. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{rtdb_8c_aaa0080db34fa47f68d128168447deb3b}{write\+Temp\+In\+Rtdb}} (unsigned char $\ast$data)
+\begin{DoxyCompactList}\small\item\em Escrita da temperatura na RTDB. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{rtdb_8c_afd7a075ef5e26bf7a024e84c65441510}{write\+Set\+Point\+Temp\+In\+Rtdb}} (unsigned char $\ast$data)
+\begin{DoxyCompactList}\small\item\em Escrita do Set\+Point tendo em conta o comando executar na RTDB. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{rtdb_8c_a70c9b06b09fc501dfc476e58c0cb756b}{init\+Peridos\+Theads}} (int a, int b, int d)
+\begin{DoxyCompactList}\small\item\em Inicialização dos periodos das Threads. \end{DoxyCompactList}\item 
+unsigned int \mbox{\hyperlink{rtdb_8c_acbfb6dde0bfe36312835ad0795cf3ed7}{read\+Period\+Thread}} (unsigned char name\+\_\+do\+\_\+thread)
+\begin{DoxyCompactList}\small\item\em Leitura dos periodos das Threads. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{rtdb_8c_a34b41488c104dcccc327a136bc345eb0}{writ\+Period\+Thread}} (unsigned char name\+\_\+do\+\_\+thread, unsigned int value\+\_\+periodo)
+\begin{DoxyCompactList}\small\item\em Definição do periodo da Thread. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Real Time Data Base code. 
+
+\begin{DoxyVersion}{Version}
+1.\+0
+\end{DoxyVersion}
+\begin{DoxyDate}{Date}
+2021-\/06-\/06
+\end{DoxyDate}
+\begin{DoxyAuthor}{Author}
+Fernando Gandarinho e Tomás Silva 
+\end{DoxyAuthor}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{rtdb_8c_a70c9b06b09fc501dfc476e58c0cb756b}\label{rtdb_8c_a70c9b06b09fc501dfc476e58c0cb756b}} 
+\index{rtdb.c@{rtdb.c}!initPeridosTheads@{initPeridosTheads}}
+\index{initPeridosTheads@{initPeridosTheads}!rtdb.c@{rtdb.c}}
+\doxysubsubsection{\texorpdfstring{initPeridosTheads()}{initPeridosTheads()}}
+{\footnotesize\ttfamily void init\+Peridos\+Theads (\begin{DoxyParamCaption}\item[{int}]{a,  }\item[{int}]{b,  }\item[{int}]{d }\end{DoxyParamCaption})}
+
+
+
+Inicialização dos periodos das Threads. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em a} & Periodo da Thread A \\
+\hline
+\mbox{\texttt{ in}}  & {\em b} & Periodo da Thread B \\
+\hline
+\mbox{\texttt{ in}}  & {\em d} & Periodo da Thread D \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{rtdb_8c_a09494414976f8ffc2888ff89849223b4}\label{rtdb_8c_a09494414976f8ffc2888ff89849223b4}} 
+\index{rtdb.c@{rtdb.c}!initStateButs@{initStateButs}}
+\index{initStateButs@{initStateButs}!rtdb.c@{rtdb.c}}
+\doxysubsubsection{\texorpdfstring{initStateButs()}{initStateButs()}}
+{\footnotesize\ttfamily void init\+State\+Buts (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption})}
+
+
+
+Função que inicializa a estrutura do estado dos botões. 
+
+\mbox{\Hypertarget{rtdb_8c_a523800cab8b8cbfa2f959cd3b4529a46}\label{rtdb_8c_a523800cab8b8cbfa2f959cd3b4529a46}} 
+\index{rtdb.c@{rtdb.c}!initStateLeds@{initStateLeds}}
+\index{initStateLeds@{initStateLeds}!rtdb.c@{rtdb.c}}
+\doxysubsubsection{\texorpdfstring{initStateLeds()}{initStateLeds()}}
+{\footnotesize\ttfamily void init\+State\+Leds (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption})}
+
+
+
+Função que inicializa a estrutura do estado dos LEDS. 
+
+\mbox{\Hypertarget{rtdb_8c_a47113cdf8adb2fc268e99bab073dc761}\label{rtdb_8c_a47113cdf8adb2fc268e99bab073dc761}} 
+\index{rtdb.c@{rtdb.c}!initTempInRtdb@{initTempInRtdb}}
+\index{initTempInRtdb@{initTempInRtdb}!rtdb.c@{rtdb.c}}
+\doxysubsubsection{\texorpdfstring{initTempInRtdb()}{initTempInRtdb()}}
+{\footnotesize\ttfamily void init\+Temp\+In\+Rtdb (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption})}
+
+
+
+Inicialização do sensor de temperatura na RTDB. 
+
+\mbox{\Hypertarget{rtdb_8c_acbfb6dde0bfe36312835ad0795cf3ed7}\label{rtdb_8c_acbfb6dde0bfe36312835ad0795cf3ed7}} 
+\index{rtdb.c@{rtdb.c}!readPeriodThread@{readPeriodThread}}
+\index{readPeriodThread@{readPeriodThread}!rtdb.c@{rtdb.c}}
+\doxysubsubsection{\texorpdfstring{readPeriodThread()}{readPeriodThread()}}
+{\footnotesize\ttfamily unsigned int read\+Period\+Thread (\begin{DoxyParamCaption}\item[{unsigned char}]{letra\+\_\+do\+\_\+thread }\end{DoxyParamCaption})}
+
+
+
+Leitura dos periodos das Threads. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em letra\+\_\+do\+\_\+thread} & Thread solicitada \\
+\hline
+\mbox{\texttt{ out}}  & {\em Periodo} & Periodo da Thread solicitada \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{rtdb_8c_a434d32f7a7a32afc7d4834b316f438f0}\label{rtdb_8c_a434d32f7a7a32afc7d4834b316f438f0}} 
+\index{rtdb.c@{rtdb.c}!readSmsInBuf@{readSmsInBuf}}
+\index{readSmsInBuf@{readSmsInBuf}!rtdb.c@{rtdb.c}}
+\doxysubsubsection{\texorpdfstring{readSmsInBuf()}{readSmsInBuf()}}
+{\footnotesize\ttfamily int read\+Sms\+In\+Buf (\begin{DoxyParamCaption}\item[{unsigned char $\ast$}]{ptr\+\_\+sms,  }\item[{int}]{buf\+\_\+size }\end{DoxyParamCaption})}
+
+
+
+Função que processa os comandos. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em ptr\+\_\+sms} & Ponteiro para o comando \\
+\hline
+\mbox{\texttt{ in}}  & {\em buf\+\_\+size} & Tamanho do buffer \\
+\hline
+\mbox{\texttt{ out}}  & {\em CMD} & Comando a executar \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{rtdb_8c_ab4e036e4e50517f43eb931dba0feb481}\label{rtdb_8c_ab4e036e4e50517f43eb931dba0feb481}} 
+\index{rtdb.c@{rtdb.c}!writeButsInRtdb@{writeButsInRtdb}}
+\index{writeButsInRtdb@{writeButsInRtdb}!rtdb.c@{rtdb.c}}
+\doxysubsubsection{\texorpdfstring{writeButsInRtdb()}{writeButsInRtdb()}}
+{\footnotesize\ttfamily void write\+Buts\+In\+Rtdb (\begin{DoxyParamCaption}\item[{struct \mbox{\hyperlink{structstate__but}{state\+\_\+but}}}]{bt }\end{DoxyParamCaption})}
+
+
+
+Função que atualiza o estado dos botões na RTDB. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em bt} & Estrutura de estado dos botões \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{rtdb_8c_a04f2df0ec4e1d8846f0794c5797cb459}\label{rtdb_8c_a04f2df0ec4e1d8846f0794c5797cb459}} 
+\index{rtdb.c@{rtdb.c}!writeLedsInRtdb@{writeLedsInRtdb}}
+\index{writeLedsInRtdb@{writeLedsInRtdb}!rtdb.c@{rtdb.c}}
+\doxysubsubsection{\texorpdfstring{writeLedsInRtdb()}{writeLedsInRtdb()}}
+{\footnotesize\ttfamily struct \mbox{\hyperlink{structstate__led}{state\+\_\+led}} write\+Leds\+In\+Rtdb (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption})}
+
+
+
+Função que atualiza o estado dos LEDs na RTDB. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ out}}  & {\em \mbox{\hyperlink{structstate__led}{state\+\_\+led}}} & Estrutura de estado dos LEDs \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{rtdb_8c_afd7a075ef5e26bf7a024e84c65441510}\label{rtdb_8c_afd7a075ef5e26bf7a024e84c65441510}} 
+\index{rtdb.c@{rtdb.c}!writeSetPointTempInRtdb@{writeSetPointTempInRtdb}}
+\index{writeSetPointTempInRtdb@{writeSetPointTempInRtdb}!rtdb.c@{rtdb.c}}
+\doxysubsubsection{\texorpdfstring{writeSetPointTempInRtdb()}{writeSetPointTempInRtdb()}}
+{\footnotesize\ttfamily void write\+Set\+Point\+Temp\+In\+Rtdb (\begin{DoxyParamCaption}\item[{unsigned char $\ast$}]{data }\end{DoxyParamCaption})}
+
+
+
+Escrita do Set\+Point tendo em conta o comando executar na RTDB. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em data} & Set\+Point da Temperatura \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{rtdb_8c_aaa0080db34fa47f68d128168447deb3b}\label{rtdb_8c_aaa0080db34fa47f68d128168447deb3b}} 
+\index{rtdb.c@{rtdb.c}!writeTempInRtdb@{writeTempInRtdb}}
+\index{writeTempInRtdb@{writeTempInRtdb}!rtdb.c@{rtdb.c}}
+\doxysubsubsection{\texorpdfstring{writeTempInRtdb()}{writeTempInRtdb()}}
+{\footnotesize\ttfamily void write\+Temp\+In\+Rtdb (\begin{DoxyParamCaption}\item[{unsigned char $\ast$}]{data }\end{DoxyParamCaption})}
+
+
+
+Escrita da temperatura na RTDB. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em data} & Temperatura \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{rtdb_8c_a34b41488c104dcccc327a136bc345eb0}\label{rtdb_8c_a34b41488c104dcccc327a136bc345eb0}} 
+\index{rtdb.c@{rtdb.c}!writPeriodThread@{writPeriodThread}}
+\index{writPeriodThread@{writPeriodThread}!rtdb.c@{rtdb.c}}
+\doxysubsubsection{\texorpdfstring{writPeriodThread()}{writPeriodThread()}}
+{\footnotesize\ttfamily void writ\+Period\+Thread (\begin{DoxyParamCaption}\item[{unsigned char}]{letra\+\_\+do\+\_\+thread,  }\item[{unsigned int}]{value\+\_\+periodo }\end{DoxyParamCaption})}
+
+
+
+Definição do periodo da Thread. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em letra\+\_\+do\+\_\+thread} & Thread solicitada \\
+\hline
+\mbox{\texttt{ in}}  & {\em values\+\_\+periodo} & Periodo a configurar na Thread solicitada \\
+\hline
+\end{DoxyParams}

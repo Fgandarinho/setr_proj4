@@ -1,11 +1,17 @@
 /**
- * Autor:
- * Date:
- * MAIN
- *
+ * @file main.c
  * 
+ * @brief Main file of the project
  * 
- */
+ * @version 1.0
+ * 
+ * @date 2021-06-06
+ * 
+ * @author Fernando Gandarinho e Tomás Silva
+ * 
+ * @note Project developed for the subject of Real Time Operating Systems
+ * @note This project is based on the Zephyr Project RTOS
+*/
 
 #include <zephyr/kernel.h>          /* for kernel functions*/
 #include <zephyr/device.h>
@@ -24,36 +30,97 @@
 #include "rtdb.h"                  /*incluir o modulo da bade de dados em tempo real*/
 
 /* definição do espaço alocado para a stack -> mundaças de contyexto de execução entre threads*/
+/**
+ * @brief Stack size of the threads
+*/
 #define STACK_SIZE 1024
-#define I2CAddr 0x4D
 
 /**
- * 
- * thread_A -> trata das atualizações do estado do botões na RTDB
- * trhead_B -> trata das atualiações dos LEDS fisiccos consuante a RTDB
- * trhead_C -> trata de executar as intruções/ordens fornecidas pelo utilizador(teclado)
- * thread_D -> trata de atualizar a temperatura na RTDB
+ * @brief I2C address of the TC74
+*/
+#define I2CAddr 0x4D
+
+/*
+  thread_A -> trata das atualizações do estado do botões na RTDB
+  trhead_B -> trata das atualiações dos LEDS fisiccos consuante a RTDB
+  trhead_C -> trata de executar as intruções/ordens fornecidas pelo utilizador(teclado)
+  thread_D -> trata de atualizar a temperatura na RTDB
 */
 /* prioridade do agendamento da Thread */
+
+/**
+ * @brief Priority of the threads
+*/
 #define thread_A_prio 1 /* 1-> maior prooridade 2-> menos prioridade*/ 
+
+/**
+ * @brief Priority of the threads
+*/
 #define thread_B_prio 1 /* 1-> maior prooridade 2-> menos prioridade*/
+
+/**
+ * @brief Priority of the threads
+*/
 #define thread_C_prio 1 /* 1-> maior prooridade 2-> menos prioridade*/
+
+/**
+ * @brief Priority of the threads
+*/
 #define thread_D_prio 1 /* 1-> maior prooridade 2-> menos prioridade*/
 
 /* Periodo da ativação do Therad (in ms)*/
+
+/**
+ * @brief Period of the thread A
+*/
 #define thread_A_period 1000
+
+/**
+ * @brief Period of the thread B
+*/
 #define thread_B_period 1500
+
+/**
+ * @brief Period of the thread C
+*/
 #define thread_C_period 2500
+
+/**
+ * @brief Period of the thread D
+*/
 #define thread_D_period 2000
 
 /*PARAMETROS DA USART*/
+/**
+ * @brief Baudrate of the UART
+*/
 #define MAIN_SLEEP_TIME_MS 5000         /* por causa da usart !!! analisar */
+
+/**
+ * @brief Error code
+*/
 #define FATAL_ERR -1                    /* Fatal error return code, app terminates */
+
+/**
+ * @brief RX buffer size
+*/
 #define RXBUF_SIZE 60                   /* RX buffer size */
+
+/**
+ * @brief TX buffer size
+*/
 #define TXBUF_SIZE 60                   /* TX buffer size */    
+
+/**
+ * @brief RX timeout
+*/
 #define RX_TIMEOUT 1000                 /* Inactivity period after the instant when last char was received that triggers an rx event (in us) */
 
+
 /* Struct for UART configuration (if using default values is not needed) */
+/**
+ * @brief UART configuration struct
+*/
 const struct uart_config uart_cfg = {
 		.baudrate = 115200,
 		.parity = UART_CFG_PARITY_NONE,
@@ -63,75 +130,227 @@ const struct uart_config uart_cfg = {
 };
 
 /* alocação do espaço para a thread*/
+/**
+ * @brief Stack allocation for the threads
+*/
 K_THREAD_STACK_DEFINE(thread_A_stack, STACK_SIZE);
 K_THREAD_STACK_DEFINE(thread_B_stack, STACK_SIZE);
 K_THREAD_STACK_DEFINE(thread_C_stack, STACK_SIZE);
 K_THREAD_STACK_DEFINE(thread_D_stack, STACK_SIZE);
   
 /* criar uma estrutura do tipo K_thread */
+/**
+ * @brief Thread A data
+*/
 struct k_thread thread_A_data;
+
+/**
+ * @brief Thread B data
+*/
 struct k_thread thread_B_data;
+
+/**
+ * @brief Thread C data
+*/
 struct k_thread thread_C_data;
+
+/**
+ * @brief Thread D data
+*/
 struct k_thread thread_D_data;
 
 /* Criar o ID da tarefa */
+/**
+ * @brief Thread A ID
+*/
 k_tid_t thread_A_tid;
+
+/**
+ * @brief Thread B ID
+*/
 k_tid_t thread_B_tid;
+
+/**
+ * @brief Thread C ID
+*/
 k_tid_t thread_C_tid;
+
+/**
+ * @brief Thread D ID
+*/
 k_tid_t thread_D_tid;
 
 /* Thread code prototypes */
+/**
+ * @brief Thread A code prototype
+*/
 void thread_A_code(void *argA, void *argB, void *argC);
+
+/**
+ * @brief Thread B code prototype
+*/
 void thread_B_code(void *argA, void *argB, void *argC);
+
+/**
+ * @brief Thread C code prototype
+*/
 void thread_C_code(void *argA, void *argB, void *argC);
+
+/**
+ * @brief Thread D code prototype
+*/
 void thread_D_code(void *argA, void *argB, void *argC);
 
 /* Refer to dts file dos LEDS*/
+/**
+ * @brief LED 0 node ID
+*/
 #define LED0_NID DT_NODELABEL(led0)
+
+/**
+ * @brief LED 1 node ID
+*/
 #define LED1_NID DT_NODELABEL(led1)
+
+/**
+ * @brief LED 2 node ID
+*/
 #define LED2_NID DT_NODELABEL(led2)
+
+/**
+ * @brief LED 3 node ID
+*/
 #define LED3_NID DT_NODELABEL(led3)
 
 /* Refer to dts file dos Botões*/
+/**
+ * @brief Button 0 node ID
+*/
 #define BUT0_NID DT_NODELABEL(button0)
+
+/**
+ * @brief Button 1 node ID
+*/
 #define BUT1_NID DT_NODELABEL(button1)
+
+/**
+ * @brief Button 2 node ID
+*/
 #define BUT2_NID DT_NODELABEL(button2)
+
+/**
+ * @brief Button 3 node ID
+*/
 #define BUT3_NID DT_NODELABEL(button3)
 
 /*refer to dts file UART0 node ID*/
+/**
+ * @brief UART node ID
+*/
 #define UART_NODE DT_NODELABEL(uart0)   /* UART0 node ID*/
+
+/**
+ * @brief I2C node ID
+*/
 #define I2C0_NODE DT_NODELABEL(tc74)    /*I2C node ID*/
 
 /*criar as estruuras dos dispositivos de GPIO*/
+/**
+ * @brief LED 0 device
+*/
 const struct gpio_dt_spec led0_dev = GPIO_DT_SPEC_GET(LED0_NID,gpios);
+
+/**
+ * @brief LED 1 device
+*/
 const struct gpio_dt_spec led1_dev = GPIO_DT_SPEC_GET(LED1_NID,gpios);
+
+/**
+ * @brief LED 2 device
+*/
 const struct gpio_dt_spec led2_dev = GPIO_DT_SPEC_GET(LED2_NID,gpios);
+
+/**
+ * @brief LED 3 device
+*/
 const struct gpio_dt_spec led3_dev = GPIO_DT_SPEC_GET(LED3_NID,gpios);
 
+/**
+ * @brief Button 0 device
+*/
 const struct gpio_dt_spec but0_dev = GPIO_DT_SPEC_GET(BUT0_NID,gpios);
+
+/**
+ * @brief Button 1 device
+*/
 const struct gpio_dt_spec but1_dev = GPIO_DT_SPEC_GET(BUT1_NID,gpios);
+
+/**
+ * @brief Button 2 device
+*/
 const struct gpio_dt_spec but2_dev = GPIO_DT_SPEC_GET(BUT2_NID,gpios);
+
+/**
+ * @brief Button 3 device
+*/
 const struct gpio_dt_spec but3_dev = GPIO_DT_SPEC_GET(BUT3_NID,gpios);
 
 /*estrutura para a callback da interrupt*/
+/**
+ * @brief GPIO callback data
+*/
 static struct gpio_callback but_cb_data;        
 
 /* variavel que será chamada pela ISR dos butões-> !!volatil!*/
 volatile int ledstat = 0;
 
 /*inicialização da estrutura local*/
+/**
+ * @brief Button state
+*/
 volatile struct state_but but;              /*Para os botões*/
+
+/**
+ * @brief LED state
+*/
 volatile struct state_but led;              /*Para os Leds*/
 
 /* UART related variables */
+/**
+ * @brief UART device struct
+*/
 const struct device *uart_dev = DEVICE_DT_GET(UART_NODE);                 /* USART Struct */ 
+
+/**
+ * @brief I2C device struct
+*/
 static const struct i2c_dt_spec dev_i2c = I2C_DT_SPEC_GET(I2C0_NODE);     /* I2C struct */
+
+/**
+ * @brief RX buffer
+*/
 static uint8_t rx_buf[RXBUF_SIZE];                                        /* RX buffer, to store received data */
+
+/**
+ * @brief TX buffer
+*/
 static uint8_t rx_chars[RXBUF_SIZE];                                      /* chars actually received  */
+
+/**
+ * @brief RX buffer number of chars
+*/
 volatile int uart_rxbuf_nchar=0;                                          /* Number of chars currrntly on the rx buffer */
 
 
 
+/**
+ * @brief Function to read the state of the buttons
+ * 
+ * @param[in] dev Device struct
+ * @param[in] cb Callback struct
+ * @param[in] pins Pins
+ * 
+*/
 void butPressCBFunction(const struct device *dev, struct gpio_callback *cb, uint32_t pins)
 {
     /* Test each button ...*/
@@ -191,6 +410,15 @@ void butPressCBFunction(const struct device *dev, struct gpio_callback *cb, uint
 /* Note that callback functions are executed in the scope of interrupt handlers. */
 /* They run asynchronously after hardware/software interrupts and have a higher priority than all threads */
 /* Should be kept as short and simple as possible. Heavier processing should be deferred to a task with suitable priority*/
+
+/**
+ * @brief UART callback
+ * 
+ * @param[in] dev UART Device struct
+ * @param[in] evt Event struct
+ * @param[in] user_data User data
+ * 
+*/
 static void uart_cb(const struct device *dev, struct uart_event *evt, void *user_data)
 {
     int err;
@@ -253,8 +481,14 @@ static void uart_cb(const struct device *dev, struct uart_event *evt, void *user
 
 }// FIM DE static void uart_cb(const struct device *dev, struct uart_event *evt, void *user_data)
 
-/**
+/*
  * Função que configura os IO's
+*/
+
+/**
+ * @brief IO configuration
+ * 
+ * @note This function configures the IOs
 */
 void ioConfig()
 {
@@ -388,6 +622,12 @@ void ioConfig()
 
 }//fim de void IoConfig()
  
+
+/**
+ * @brief UART initialization and configuration
+ * 
+ * @note This function initializes and configures the UART
+*/
 void usartConfig()
 {
     int err=0; /* Generic error variable */
@@ -425,9 +665,15 @@ void usartConfig()
 
  }
 
-/**
+/*
  * Funcção que inicializa e configura a comunicação I2C,
  * para solicitar e ler a temperatura do TC74
+*/
+
+/**
+ * @brief I2C initialization and configuration for TC74
+ * 
+ * @note This function initializes and configures the I2C for the temperature sensor
 */
 void i2cConfig()
 {
@@ -444,6 +690,12 @@ void i2cConfig()
 }// fim de void i2cConfig()
 
 /* Main function */
+
+/**
+ * @brief Main function
+ * 
+ * @note This function is the main function of the project
+*/
 void main(void) 
 {
     printk("\n ################################### \n\r ");
@@ -511,10 +763,20 @@ void main(void)
 } 
 
 
-/**
+/*
  *  Thread_A ->code implementation
  * Este thread é responsável por atualizar o estado dos botões fisicos na RTDB
   */
+
+ /**
+  * @brief Thread A code implementation
+  * 
+  * @param[in] argA Argument A
+  * @param[in] argB Argument B
+  * @param[in] argC Argument C
+  * 
+  * @note Este thread é responsável por atualizar o estado dos botões fisicos na RTDB
+ */
 void thread_A_code(void *argA , void *argB, void *argC)
 {
     /* variaveis locauis */
@@ -547,11 +809,21 @@ void thread_A_code(void *argA , void *argB, void *argC)
 }// fim de void thread_A_code(void *argA , void *argB, void *argC)
 
 
-/**
+/*
  *  Thread_B ->code implementation
  * Este thread é responsável Ler os estado dos LEDs na RTDB e atualizar as saídas fisicas
  * 
   */
+
+ /**
+  * @brief Thread B code implementation
+  * 
+  * @param[in] argA Argument A
+  * @param[in] argB Argument B
+  * @param[in] argC Argument C
+  * 
+  * @note Este thread é responsável Ler os estado dos LEDs na RTDB e atualizar as saídas fisicas
+ */
 void thread_B_code(void *argA , void *argB, void *argC)
 {
     /* variaveis locauis */
@@ -589,11 +861,21 @@ void thread_B_code(void *argA , void *argB, void *argC)
 }//fim de void thread_B_code(void *argA , void *argB, void *argC)
 
 
-/**
+/*
  *  Thread_C ->code implementation
  * Thread_C leitura e execução das SMS vindas do utilizador
  * 
   */
+
+ /**
+  * @brief Thread C code implementation
+  * 
+  * @param[in] argA Argument A
+  * @param[in] argB Argument B
+  * @param[in] argC Argument C
+  * 
+  * @note Esta thread é responsável pela leitura e execução dos comandos do utilizador
+ */
 void thread_C_code(void *argA , void *argB, void *argC)
 {
   
@@ -628,10 +910,20 @@ void thread_C_code(void *argA , void *argB, void *argC)
 }//fim de void thread_B_code(void *argA , void *argB, void *argC)
 
 
-/**
+/*
  * Thread_D
  * Este Thread tem como objetivo atualizar periodicamete a RTDB com as informações do
  * Sensor TC47 que comunica por I2C
+*/
+
+/**
+ * @brief Thread D code implementation
+ * 
+ * @param[in] argA Argument A
+ * @param[in] argB Argument B
+ * @param[in] argC Argument C
+ * 
+ * @note Esta thread é responsável por atualizar periodicamente a RTDB com as informações do sensor de temperatura
 */
 void thread_D_code(void *argA , void *argB, void *argC)
 {

@@ -1,0 +1,11 @@
+digraph "/home/tomas/Desktop/SETR/setr_proj4/src" {
+  compound=true
+  node [ fontsize="10", fontname="Helvetica"];
+  edge [ labelfontsize="10", labelfontname="Helvetica"];
+  subgraph clusterdir_68267d1309a1af8e8297ef4c3efbcdba {
+    graph [ bgcolor="#eeeeff", pencolor="black", label="" URL="dir_68267d1309a1af8e8297ef4c3efbcdba.html"];
+    dir_68267d1309a1af8e8297ef4c3efbcdba [shape=plaintext label="src"];
+  dir_e6ae92a0a90783a27d50df0928ad190b [shape=box label="rtdb" fillcolor="white" style="filled" URL="dir_e6ae92a0a90783a27d50df0928ad190b.html"];
+  }
+  dir_68267d1309a1af8e8297ef4c3efbcdba->dir_e6ae92a0a90783a27d50df0928ad190b [headlabel="1", labeldistance=1.5 headhref="dir_000000_000001.html"];
+}

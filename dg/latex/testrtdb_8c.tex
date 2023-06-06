@@ -1,0 +1,127 @@
+\hypertarget{testrtdb_8c}{}\doxysection{/home/tomas/\+Desktop/\+SETR/setr\+\_\+proj4/test\+\_\+unit/testrtdb.c File Reference}
+\label{testrtdb_8c}\index{/home/tomas/Desktop/SETR/setr\_proj4/test\_unit/testrtdb.c@{/home/tomas/Desktop/SETR/setr\_proj4/test\_unit/testrtdb.c}}
+
+
+Real Time Data Base test code.  
+
+
+{\ttfamily \#include $<$unity.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}../src/rtdb/rtdb.\+h\char`\"{}}\newline
+Include dependency graph for testrtdb.\+c\+:
+% FIG 0
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \mbox{\hyperlink{testrtdb_8c_a0a2db73dd34295ca22b759dde70c1a40}{buf\+\_\+size}}~60     /$\ast$defenir o tamanho de um buf\+Local para testes locais$\ast$/
+\begin{DoxyCompactList}\small\item\em Tamanho do Buffer. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{testrtdb_8c_a95c834d6178047ce9e1bce7cbfea2836}{set\+Up}} (void)
+\item 
+void \mbox{\hyperlink{testrtdb_8c_a9909011e5fea0c018842eec4d93d0662}{tear\+Down}} (void)
+\item 
+void \mbox{\hyperlink{testrtdb_8c_a8401e220233b4f6144fd90f19dd47ee6}{insert\+Strg}} (const char $\ast$ptr\+\_\+string, int size)
+\begin{DoxyCompactList}\small\item\em Função de inserção de comandos. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{testrtdb_8c_a63c9acdb375f5d0fa26936dab4c29d93}{test\+\_\+read\+Sms\+In\+Buf\+\_\+\+Returns\+\_\+vall\+\_\+\+Ok}} (void)
+\begin{DoxyCompactList}\small\item\em Função de teste dos comandos. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{testrtdb_8c_a840291bc02cba5474a4cb46a9b9566fe}{main}} (void)
+\end{DoxyCompactItemize}
+\doxysubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+unsigned char \mbox{\hyperlink{testrtdb_8c_a3a968add1387c964127e2f8df9be3d50}{sms}} \mbox{[}\mbox{\hyperlink{testrtdb_8c_a0a2db73dd34295ca22b759dde70c1a40}{buf\+\_\+size}}\mbox{]}
+\begin{DoxyCompactList}\small\item\em Inicialização do comando. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Real Time Data Base test code. 
+
+\begin{DoxyVersion}{Version}
+1.\+0
+\end{DoxyVersion}
+\begin{DoxyDate}{Date}
+2021-\/06-\/06
+\end{DoxyDate}
+\begin{DoxyAuthor}{Author}
+Fernando Gandarinho e Tomás Silva 
+\end{DoxyAuthor}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{testrtdb_8c_a0a2db73dd34295ca22b759dde70c1a40}\label{testrtdb_8c_a0a2db73dd34295ca22b759dde70c1a40}} 
+\index{testrtdb.c@{testrtdb.c}!buf\_size@{buf\_size}}
+\index{buf\_size@{buf\_size}!testrtdb.c@{testrtdb.c}}
+\doxysubsubsection{\texorpdfstring{buf\_size}{buf\_size}}
+{\footnotesize\ttfamily \#define buf\+\_\+size~60     /$\ast$defenir o tamanho de um buf\+Local para testes locais$\ast$/}
+
+
+
+Tamanho do Buffer. 
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{testrtdb_8c_a8401e220233b4f6144fd90f19dd47ee6}\label{testrtdb_8c_a8401e220233b4f6144fd90f19dd47ee6}} 
+\index{testrtdb.c@{testrtdb.c}!insertStrg@{insertStrg}}
+\index{insertStrg@{insertStrg}!testrtdb.c@{testrtdb.c}}
+\doxysubsubsection{\texorpdfstring{insertStrg()}{insertStrg()}}
+{\footnotesize\ttfamily void insert\+Strg (\begin{DoxyParamCaption}\item[{const char $\ast$}]{ptr\+\_\+string,  }\item[{int}]{size }\end{DoxyParamCaption})}
+
+
+
+Função de inserção de comandos. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em ptr\+\_\+string} & Ponteiro para os comandos \\
+\hline
+\mbox{\texttt{ in}}  & {\em size} & tamanho do comando \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{testrtdb_8c_a840291bc02cba5474a4cb46a9b9566fe}\label{testrtdb_8c_a840291bc02cba5474a4cb46a9b9566fe}} 
+\index{testrtdb.c@{testrtdb.c}!main@{main}}
+\index{main@{main}!testrtdb.c@{testrtdb.c}}
+\doxysubsubsection{\texorpdfstring{main()}{main()}}
+{\footnotesize\ttfamily int main (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{testrtdb_8c_a95c834d6178047ce9e1bce7cbfea2836}\label{testrtdb_8c_a95c834d6178047ce9e1bce7cbfea2836}} 
+\index{testrtdb.c@{testrtdb.c}!setUp@{setUp}}
+\index{setUp@{setUp}!testrtdb.c@{testrtdb.c}}
+\doxysubsubsection{\texorpdfstring{setUp()}{setUp()}}
+{\footnotesize\ttfamily void set\+Up (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{testrtdb_8c_a9909011e5fea0c018842eec4d93d0662}\label{testrtdb_8c_a9909011e5fea0c018842eec4d93d0662}} 
+\index{testrtdb.c@{testrtdb.c}!tearDown@{tearDown}}
+\index{tearDown@{tearDown}!testrtdb.c@{testrtdb.c}}
+\doxysubsubsection{\texorpdfstring{tearDown()}{tearDown()}}
+{\footnotesize\ttfamily void tear\+Down (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{testrtdb_8c_a63c9acdb375f5d0fa26936dab4c29d93}\label{testrtdb_8c_a63c9acdb375f5d0fa26936dab4c29d93}} 
+\index{testrtdb.c@{testrtdb.c}!test\_readSmsInBuf\_Returns\_vall\_Ok@{test\_readSmsInBuf\_Returns\_vall\_Ok}}
+\index{test\_readSmsInBuf\_Returns\_vall\_Ok@{test\_readSmsInBuf\_Returns\_vall\_Ok}!testrtdb.c@{testrtdb.c}}
+\doxysubsubsection{\texorpdfstring{test\_readSmsInBuf\_Returns\_vall\_Ok()}{test\_readSmsInBuf\_Returns\_vall\_Ok()}}
+{\footnotesize\ttfamily void test\+\_\+read\+Sms\+In\+Buf\+\_\+\+Returns\+\_\+vall\+\_\+\+Ok (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption})}
+
+
+
+Função de teste dos comandos. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ out}}  & {\em Resultado} & Resultado do teste \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Variable Documentation}
+\mbox{\Hypertarget{testrtdb_8c_a3a968add1387c964127e2f8df9be3d50}\label{testrtdb_8c_a3a968add1387c964127e2f8df9be3d50}} 
+\index{testrtdb.c@{testrtdb.c}!sms@{sms}}
+\index{sms@{sms}!testrtdb.c@{testrtdb.c}}
+\doxysubsubsection{\texorpdfstring{sms}{sms}}
+{\footnotesize\ttfamily unsigned char sms\mbox{[}\mbox{\hyperlink{testrtdb_8c_a0a2db73dd34295ca22b759dde70c1a40}{buf\+\_\+size}}\mbox{]}}
+
+
+
+Inicialização do comando. 
+

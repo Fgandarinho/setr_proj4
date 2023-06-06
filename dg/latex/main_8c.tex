@@ -1,0 +1,853 @@
+\hypertarget{main_8c}{}\doxysection{/home/tomas/\+Desktop/\+SETR/setr\+\_\+proj4/src/main.c File Reference}
+\label{main_8c}\index{/home/tomas/Desktop/SETR/setr\_proj4/src/main.c@{/home/tomas/Desktop/SETR/setr\_proj4/src/main.c}}
+
+
+Main file of the project.  
+
+
+{\ttfamily \#include $<$zephyr/kernel.\+h$>$}\newline
+{\ttfamily \#include $<$zephyr/device.\+h$>$}\newline
+{\ttfamily \#include $<$zephyr/devicetree.\+h$>$}\newline
+{\ttfamily \#include $<$zephyr/drivers/uart.\+h$>$}\newline
+{\ttfamily \#include $<$zephyr/drivers/gpio.\+h$>$}\newline
+{\ttfamily \#include $<$zephyr/sys/printk.\+h$>$}\newline
+{\ttfamily \#include $<$zephyr/timing/timing.\+h$>$}\newline
+{\ttfamily \#include $<$stdio.\+h$>$}\newline
+{\ttfamily \#include $<$stdlib.\+h$>$}\newline
+{\ttfamily \#include $<$string.\+h$>$}\newline
+{\ttfamily \#include $<$zephyr/types.\+h$>$}\newline
+{\ttfamily \#include $<$zephyr/drivers/i2c.\+h$>$}\newline
+{\ttfamily \#include $<$zephyr/sys/util.\+h$>$}\newline
+{\ttfamily \#include $<$inttypes.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}rtdb.\+h\char`\"{}}\newline
+Include dependency graph for main.\+c\+:
+% FIG 0
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \mbox{\hyperlink{main_8c_a6423a880df59733d2d9b509c7718d3a9}{STACK\+\_\+\+SIZE}}~1024
+\begin{DoxyCompactList}\small\item\em Stack size of the threads. \end{DoxyCompactList}\item 
+\#define \mbox{\hyperlink{main_8c_ad2d7c58e580911e70b3ecbb4ff4d757a}{I2\+CAddr}}~0x4D
+\begin{DoxyCompactList}\small\item\em I2C address of the TC74. \end{DoxyCompactList}\item 
+\#define \mbox{\hyperlink{main_8c_a5936222e9802dbe8ceb1e99bd667466a}{thread\+\_\+\+A\+\_\+prio}}~1 /$\ast$ 1-\/$>$ maior prooridade 2-\/$>$ menos prioridade$\ast$/
+\begin{DoxyCompactList}\small\item\em Priority of the threads. \end{DoxyCompactList}\item 
+\#define \mbox{\hyperlink{main_8c_aa9928aa4491a20c74a19c5904ba9530a}{thread\+\_\+\+B\+\_\+prio}}~1 /$\ast$ 1-\/$>$ maior prooridade 2-\/$>$ menos prioridade$\ast$/
+\begin{DoxyCompactList}\small\item\em Priority of the threads. \end{DoxyCompactList}\item 
+\#define \mbox{\hyperlink{main_8c_a1bd72aae8d0dd6e887547a1d5e0a8902}{thread\+\_\+\+C\+\_\+prio}}~1 /$\ast$ 1-\/$>$ maior prooridade 2-\/$>$ menos prioridade$\ast$/
+\begin{DoxyCompactList}\small\item\em Priority of the threads. \end{DoxyCompactList}\item 
+\#define \mbox{\hyperlink{main_8c_a02433a30dac2e9bc252089790fc081e3}{thread\+\_\+\+D\+\_\+prio}}~1 /$\ast$ 1-\/$>$ maior prooridade 2-\/$>$ menos prioridade$\ast$/
+\begin{DoxyCompactList}\small\item\em Priority of the threads. \end{DoxyCompactList}\item 
+\#define \mbox{\hyperlink{main_8c_a2ed7791f41bc6281906a0878492b0894}{thread\+\_\+\+A\+\_\+period}}~1000
+\begin{DoxyCompactList}\small\item\em Period of the thread A. \end{DoxyCompactList}\item 
+\#define \mbox{\hyperlink{main_8c_a85e1e738201e8f4eef6266717bd5bd36}{thread\+\_\+\+B\+\_\+period}}~1500
+\begin{DoxyCompactList}\small\item\em Period of the thread B. \end{DoxyCompactList}\item 
+\#define \mbox{\hyperlink{main_8c_ab012623edae6603682cdaf0eb0a220f2}{thread\+\_\+\+C\+\_\+period}}~2500
+\begin{DoxyCompactList}\small\item\em Period of the thread C. \end{DoxyCompactList}\item 
+\#define \mbox{\hyperlink{main_8c_a36ecc8fccd19047747e26bec4f67f68b}{thread\+\_\+\+D\+\_\+period}}~2000
+\begin{DoxyCompactList}\small\item\em Period of the thread D. \end{DoxyCompactList}\item 
+\#define \mbox{\hyperlink{main_8c_aabfdd434c3f5fc98789fd65dc741f3f5}{MAIN\+\_\+\+SLEEP\+\_\+\+TIME\+\_\+\+MS}}~5000         /$\ast$ por causa da usart !!! analisar $\ast$/
+\begin{DoxyCompactList}\small\item\em Baudrate of the UART. \end{DoxyCompactList}\item 
+\#define \mbox{\hyperlink{main_8c_aa46777f75164fc107271e38f1f773e4d}{FATAL\+\_\+\+ERR}}~-\/1                    /$\ast$ Fatal error return code, app terminates $\ast$/
+\begin{DoxyCompactList}\small\item\em Error code. \end{DoxyCompactList}\item 
+\#define \mbox{\hyperlink{main_8c_a630686ccbe0cb17e592951055a5da582}{RXBUF\+\_\+\+SIZE}}~60                   /$\ast$ RX buffer size $\ast$/
+\begin{DoxyCompactList}\small\item\em RX buffer size. \end{DoxyCompactList}\item 
+\#define \mbox{\hyperlink{main_8c_a923af2d146f214e75816a7f5993cee29}{TXBUF\+\_\+\+SIZE}}~60                   /$\ast$ TX buffer size $\ast$/
+\begin{DoxyCompactList}\small\item\em TX buffer size. \end{DoxyCompactList}\item 
+\#define \mbox{\hyperlink{main_8c_ab6426fc74901f4fbec94862ebb672b81}{RX\+\_\+\+TIMEOUT}}~1000                 /$\ast$ Inactivity period after the instant when last char was received that triggers an rx event (in us) $\ast$/
+\begin{DoxyCompactList}\small\item\em RX timeout. \end{DoxyCompactList}\item 
+\#define \mbox{\hyperlink{main_8c_a5a0dba70a012086a1eae374caddb1197}{LED0\+\_\+\+NID}}~DT\+\_\+\+NODELABEL(led0)
+\begin{DoxyCompactList}\small\item\em LED 0 node ID. \end{DoxyCompactList}\item 
+\#define \mbox{\hyperlink{main_8c_a46d2572ea49fee27d7069c2d5fb5ad9b}{LED1\+\_\+\+NID}}~DT\+\_\+\+NODELABEL(led1)
+\begin{DoxyCompactList}\small\item\em LED 1 node ID. \end{DoxyCompactList}\item 
+\#define \mbox{\hyperlink{main_8c_a97c722f212f8b56ba7ddf8d698193ddd}{LED2\+\_\+\+NID}}~DT\+\_\+\+NODELABEL(led2)
+\begin{DoxyCompactList}\small\item\em LED 2 node ID. \end{DoxyCompactList}\item 
+\#define \mbox{\hyperlink{main_8c_acebe9f3924154563f042c3adbd588d24}{LED3\+\_\+\+NID}}~DT\+\_\+\+NODELABEL(led3)
+\begin{DoxyCompactList}\small\item\em LED 3 node ID. \end{DoxyCompactList}\item 
+\#define \mbox{\hyperlink{main_8c_a3e6e609a2c52824431254e9d3b722971}{BUT0\+\_\+\+NID}}~DT\+\_\+\+NODELABEL(button0)
+\begin{DoxyCompactList}\small\item\em Button 0 node ID. \end{DoxyCompactList}\item 
+\#define \mbox{\hyperlink{main_8c_af40d5b4c65a9e18b505875e6b257a982}{BUT1\+\_\+\+NID}}~DT\+\_\+\+NODELABEL(button1)
+\begin{DoxyCompactList}\small\item\em Button 1 node ID. \end{DoxyCompactList}\item 
+\#define \mbox{\hyperlink{main_8c_ae1f2d342dcf66e19932a404d506c6112}{BUT2\+\_\+\+NID}}~DT\+\_\+\+NODELABEL(button2)
+\begin{DoxyCompactList}\small\item\em Button 2 node ID. \end{DoxyCompactList}\item 
+\#define \mbox{\hyperlink{main_8c_abe9413c2139657d69099b5610f3e1ba4}{BUT3\+\_\+\+NID}}~DT\+\_\+\+NODELABEL(button3)
+\begin{DoxyCompactList}\small\item\em Button 3 node ID. \end{DoxyCompactList}\item 
+\#define \mbox{\hyperlink{main_8c_a07b40c5bd9acc44f62a9182527dbcc9b}{UART\+\_\+\+NODE}}~DT\+\_\+\+NODELABEL(uart0)   /$\ast$ UART0 node ID$\ast$/
+\begin{DoxyCompactList}\small\item\em UART node ID. \end{DoxyCompactList}\item 
+\#define \mbox{\hyperlink{main_8c_afcb352d4b5a59e9bb75e1b45255e48e4}{I2\+C0\+\_\+\+NODE}}~DT\+\_\+\+NODELABEL(tc74)    /$\ast$I2C node ID$\ast$/
+\begin{DoxyCompactList}\small\item\em I2C node ID. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{main_8c_aa25f5f9092ccf13998f3cb9e9e1d10a6}{K\+\_\+\+THREAD\+\_\+\+STACK\+\_\+\+DEFINE}} (thread\+\_\+\+A\+\_\+stack, \mbox{\hyperlink{main_8c_a6423a880df59733d2d9b509c7718d3a9}{STACK\+\_\+\+SIZE}})
+\begin{DoxyCompactList}\small\item\em Stack allocation for the threads. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{main_8c_a8318aa1ed5939244957a68387085ddec}{K\+\_\+\+THREAD\+\_\+\+STACK\+\_\+\+DEFINE}} (thread\+\_\+\+B\+\_\+stack, \mbox{\hyperlink{main_8c_a6423a880df59733d2d9b509c7718d3a9}{STACK\+\_\+\+SIZE}})
+\item 
+\mbox{\hyperlink{main_8c_a331fd55d9b95c3e662a4148fbc522271}{K\+\_\+\+THREAD\+\_\+\+STACK\+\_\+\+DEFINE}} (thread\+\_\+\+C\+\_\+stack, \mbox{\hyperlink{main_8c_a6423a880df59733d2d9b509c7718d3a9}{STACK\+\_\+\+SIZE}})
+\item 
+\mbox{\hyperlink{main_8c_a1aa340a38690690e42169ae37089ca8f}{K\+\_\+\+THREAD\+\_\+\+STACK\+\_\+\+DEFINE}} (thread\+\_\+\+D\+\_\+stack, \mbox{\hyperlink{main_8c_a6423a880df59733d2d9b509c7718d3a9}{STACK\+\_\+\+SIZE}})
+\item 
+void \mbox{\hyperlink{main_8c_a61675a61bbec86901b2fe28f008e881c}{thread\+\_\+\+A\+\_\+code}} (void $\ast$argA, void $\ast$argB, void $\ast$argC)
+\begin{DoxyCompactList}\small\item\em Thread A code prototype. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{main_8c_a99cef2c8673e9c73162dd97f0247ca8e}{thread\+\_\+\+B\+\_\+code}} (void $\ast$argA, void $\ast$argB, void $\ast$argC)
+\begin{DoxyCompactList}\small\item\em Thread B code prototype. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{main_8c_a6eec62f04743b40b6d744ecd2f31cdd2}{thread\+\_\+\+C\+\_\+code}} (void $\ast$argA, void $\ast$argB, void $\ast$argC)
+\begin{DoxyCompactList}\small\item\em Thread C code prototype. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{main_8c_a1a621f0dfdf57a438495482f571278e7}{thread\+\_\+\+D\+\_\+code}} (void $\ast$argA, void $\ast$argB, void $\ast$argC)
+\begin{DoxyCompactList}\small\item\em Thread D code prototype. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{main_8c_a89714abaf21dd16bd5321d0f3744c6f2}{but\+Press\+CBFunction}} (const struct device $\ast$dev, struct gpio\+\_\+callback $\ast$cb, uint32\+\_\+t pins)
+\begin{DoxyCompactList}\small\item\em Function to read the state of the buttons. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{main_8c_a2d3cbc477a2d2b1d993fb11d24461196}{io\+Config}} ()
+\begin{DoxyCompactList}\small\item\em IO configuration. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{main_8c_a73d1de4649292bc8f0380d59d8551a4e}{usart\+Config}} ()
+\begin{DoxyCompactList}\small\item\em UART initialization and configuration. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{main_8c_a2126fe0d8ea0b8743c132b103e091fb9}{i2c\+Config}} ()
+\begin{DoxyCompactList}\small\item\em I2C initialization and configuration for TC74. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{main_8c_a6288eba0f8e8ad3ab1544ad731eb7667}{main}} (void)
+\begin{DoxyCompactList}\small\item\em Main function. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+const struct uart\+\_\+config \mbox{\hyperlink{main_8c_acbbb8dc9e34f2cbd68792504dc18da81}{uart\+\_\+cfg}}
+\begin{DoxyCompactList}\small\item\em UART configuration struct. \end{DoxyCompactList}\item 
+struct k\+\_\+thread \mbox{\hyperlink{main_8c_a6d4412666e45fbd3d7bb2e537e3e4921}{thread\+\_\+\+A\+\_\+data}}
+\begin{DoxyCompactList}\small\item\em Thread A data. \end{DoxyCompactList}\item 
+struct k\+\_\+thread \mbox{\hyperlink{main_8c_ad832c1a3de4a77b89216efc38eddcb72}{thread\+\_\+\+B\+\_\+data}}
+\begin{DoxyCompactList}\small\item\em Thread B data. \end{DoxyCompactList}\item 
+struct k\+\_\+thread \mbox{\hyperlink{main_8c_a9723f8aa3cfd56015ee57bc31879f8ec}{thread\+\_\+\+C\+\_\+data}}
+\begin{DoxyCompactList}\small\item\em Thread C data. \end{DoxyCompactList}\item 
+struct k\+\_\+thread \mbox{\hyperlink{main_8c_a91a7abf451804f293c55d5fc507cee31}{thread\+\_\+\+D\+\_\+data}}
+\begin{DoxyCompactList}\small\item\em Thread D data. \end{DoxyCompactList}\item 
+k\+\_\+tid\+\_\+t \mbox{\hyperlink{main_8c_aaac68d6bd12397c115c8f5fb8b8dae16}{thread\+\_\+\+A\+\_\+tid}}
+\begin{DoxyCompactList}\small\item\em Thread A ID. \end{DoxyCompactList}\item 
+k\+\_\+tid\+\_\+t \mbox{\hyperlink{main_8c_af2bd9deb85bd5ac0cdf3a0b077411289}{thread\+\_\+\+B\+\_\+tid}}
+\begin{DoxyCompactList}\small\item\em Thread B ID. \end{DoxyCompactList}\item 
+k\+\_\+tid\+\_\+t \mbox{\hyperlink{main_8c_a3e9a231be3f7d1a28871ddfdf5ca8fe3}{thread\+\_\+\+C\+\_\+tid}}
+\begin{DoxyCompactList}\small\item\em Thread C ID. \end{DoxyCompactList}\item 
+k\+\_\+tid\+\_\+t \mbox{\hyperlink{main_8c_ae130441eb06f8e1d532010c32c8fd15c}{thread\+\_\+\+D\+\_\+tid}}
+\begin{DoxyCompactList}\small\item\em Thread D ID. \end{DoxyCompactList}\item 
+const struct gpio\+\_\+dt\+\_\+spec \mbox{\hyperlink{main_8c_a289ba848a6f6b45b926a5f9a2b2353f5}{led0\+\_\+dev}} = GPIO\+\_\+\+DT\+\_\+\+SPEC\+\_\+\+GET(\mbox{\hyperlink{main_8c_a5a0dba70a012086a1eae374caddb1197}{LED0\+\_\+\+NID}},gpios)
+\begin{DoxyCompactList}\small\item\em LED 0 device. \end{DoxyCompactList}\item 
+const struct gpio\+\_\+dt\+\_\+spec \mbox{\hyperlink{main_8c_a3d38d2995ef97f0703573cdf9efa65f5}{led1\+\_\+dev}} = GPIO\+\_\+\+DT\+\_\+\+SPEC\+\_\+\+GET(\mbox{\hyperlink{main_8c_a46d2572ea49fee27d7069c2d5fb5ad9b}{LED1\+\_\+\+NID}},gpios)
+\begin{DoxyCompactList}\small\item\em LED 1 device. \end{DoxyCompactList}\item 
+const struct gpio\+\_\+dt\+\_\+spec \mbox{\hyperlink{main_8c_a6bf2683c72f0a09b781c47556eecdb64}{led2\+\_\+dev}} = GPIO\+\_\+\+DT\+\_\+\+SPEC\+\_\+\+GET(\mbox{\hyperlink{main_8c_a97c722f212f8b56ba7ddf8d698193ddd}{LED2\+\_\+\+NID}},gpios)
+\begin{DoxyCompactList}\small\item\em LED 2 device. \end{DoxyCompactList}\item 
+const struct gpio\+\_\+dt\+\_\+spec \mbox{\hyperlink{main_8c_a987a7cfc1150984e74413e565f4609b3}{led3\+\_\+dev}} = GPIO\+\_\+\+DT\+\_\+\+SPEC\+\_\+\+GET(\mbox{\hyperlink{main_8c_acebe9f3924154563f042c3adbd588d24}{LED3\+\_\+\+NID}},gpios)
+\begin{DoxyCompactList}\small\item\em LED 3 device. \end{DoxyCompactList}\item 
+const struct gpio\+\_\+dt\+\_\+spec \mbox{\hyperlink{main_8c_aa23f5d1ef65c1f2022f5ccd4327190c7}{but0\+\_\+dev}} = GPIO\+\_\+\+DT\+\_\+\+SPEC\+\_\+\+GET(\mbox{\hyperlink{main_8c_a3e6e609a2c52824431254e9d3b722971}{BUT0\+\_\+\+NID}},gpios)
+\begin{DoxyCompactList}\small\item\em Button 0 device. \end{DoxyCompactList}\item 
+const struct gpio\+\_\+dt\+\_\+spec \mbox{\hyperlink{main_8c_a67a470f16c010fc01b188dd790539f1b}{but1\+\_\+dev}} = GPIO\+\_\+\+DT\+\_\+\+SPEC\+\_\+\+GET(\mbox{\hyperlink{main_8c_af40d5b4c65a9e18b505875e6b257a982}{BUT1\+\_\+\+NID}},gpios)
+\begin{DoxyCompactList}\small\item\em Button 1 device. \end{DoxyCompactList}\item 
+const struct gpio\+\_\+dt\+\_\+spec \mbox{\hyperlink{main_8c_a3700e6a0d8be99d845a4ec464e8b4377}{but2\+\_\+dev}} = GPIO\+\_\+\+DT\+\_\+\+SPEC\+\_\+\+GET(\mbox{\hyperlink{main_8c_ae1f2d342dcf66e19932a404d506c6112}{BUT2\+\_\+\+NID}},gpios)
+\begin{DoxyCompactList}\small\item\em Button 2 device. \end{DoxyCompactList}\item 
+const struct gpio\+\_\+dt\+\_\+spec \mbox{\hyperlink{main_8c_a64c0e22f57ea882c09250333be012335}{but3\+\_\+dev}} = GPIO\+\_\+\+DT\+\_\+\+SPEC\+\_\+\+GET(\mbox{\hyperlink{main_8c_abe9413c2139657d69099b5610f3e1ba4}{BUT3\+\_\+\+NID}},gpios)
+\begin{DoxyCompactList}\small\item\em Button 3 device. \end{DoxyCompactList}\item 
+volatile int \mbox{\hyperlink{main_8c_a21fd29fcdf0cd666fc00ba6a476dc87d}{ledstat}} = 0
+\item 
+volatile struct \mbox{\hyperlink{structstate__but}{state\+\_\+but}} \mbox{\hyperlink{main_8c_aa79f0c8c90781e028a147ac093083f27}{but}}
+\begin{DoxyCompactList}\small\item\em Button state. \end{DoxyCompactList}\item 
+volatile struct \mbox{\hyperlink{structstate__but}{state\+\_\+but}} \mbox{\hyperlink{main_8c_a974c5afab9e21b41a6d9dd7825ef7b83}{led}}
+\begin{DoxyCompactList}\small\item\em LED state. \end{DoxyCompactList}\item 
+const struct device $\ast$ \mbox{\hyperlink{main_8c_a660f23134aaae43c9ff2c6096fa59342}{uart\+\_\+dev}} = DEVICE\+\_\+\+DT\+\_\+\+GET(\mbox{\hyperlink{main_8c_a07b40c5bd9acc44f62a9182527dbcc9b}{UART\+\_\+\+NODE}})
+\begin{DoxyCompactList}\small\item\em UART device struct. \end{DoxyCompactList}\item 
+volatile int \mbox{\hyperlink{main_8c_a7f447b32df78b68d1bd7a3581558ca3a}{uart\+\_\+rxbuf\+\_\+nchar}} =0
+\begin{DoxyCompactList}\small\item\em RX buffer number of chars. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Main file of the project. 
+
+\begin{DoxyVersion}{Version}
+1.\+0
+\end{DoxyVersion}
+\begin{DoxyDate}{Date}
+2021-\/06-\/06
+\end{DoxyDate}
+\begin{DoxyAuthor}{Author}
+Fernando Gandarinho e Tomás Silva
+\end{DoxyAuthor}
+\begin{DoxyNote}{Note}
+Project developed for the subject of Real Time Operating Systems 
+
+This project is based on the Zephyr Project RTOS 
+\end{DoxyNote}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{main_8c_a3e6e609a2c52824431254e9d3b722971}\label{main_8c_a3e6e609a2c52824431254e9d3b722971}} 
+\index{main.c@{main.c}!BUT0\_NID@{BUT0\_NID}}
+\index{BUT0\_NID@{BUT0\_NID}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{BUT0\_NID}{BUT0\_NID}}
+{\footnotesize\ttfamily \#define BUT0\+\_\+\+NID~DT\+\_\+\+NODELABEL(button0)}
+
+
+
+Button 0 node ID. 
+
+\mbox{\Hypertarget{main_8c_af40d5b4c65a9e18b505875e6b257a982}\label{main_8c_af40d5b4c65a9e18b505875e6b257a982}} 
+\index{main.c@{main.c}!BUT1\_NID@{BUT1\_NID}}
+\index{BUT1\_NID@{BUT1\_NID}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{BUT1\_NID}{BUT1\_NID}}
+{\footnotesize\ttfamily \#define BUT1\+\_\+\+NID~DT\+\_\+\+NODELABEL(button1)}
+
+
+
+Button 1 node ID. 
+
+\mbox{\Hypertarget{main_8c_ae1f2d342dcf66e19932a404d506c6112}\label{main_8c_ae1f2d342dcf66e19932a404d506c6112}} 
+\index{main.c@{main.c}!BUT2\_NID@{BUT2\_NID}}
+\index{BUT2\_NID@{BUT2\_NID}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{BUT2\_NID}{BUT2\_NID}}
+{\footnotesize\ttfamily \#define BUT2\+\_\+\+NID~DT\+\_\+\+NODELABEL(button2)}
+
+
+
+Button 2 node ID. 
+
+\mbox{\Hypertarget{main_8c_abe9413c2139657d69099b5610f3e1ba4}\label{main_8c_abe9413c2139657d69099b5610f3e1ba4}} 
+\index{main.c@{main.c}!BUT3\_NID@{BUT3\_NID}}
+\index{BUT3\_NID@{BUT3\_NID}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{BUT3\_NID}{BUT3\_NID}}
+{\footnotesize\ttfamily \#define BUT3\+\_\+\+NID~DT\+\_\+\+NODELABEL(button3)}
+
+
+
+Button 3 node ID. 
+
+\mbox{\Hypertarget{main_8c_aa46777f75164fc107271e38f1f773e4d}\label{main_8c_aa46777f75164fc107271e38f1f773e4d}} 
+\index{main.c@{main.c}!FATAL\_ERR@{FATAL\_ERR}}
+\index{FATAL\_ERR@{FATAL\_ERR}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{FATAL\_ERR}{FATAL\_ERR}}
+{\footnotesize\ttfamily \#define FATAL\+\_\+\+ERR~-\/1                    /$\ast$ Fatal error return code, app terminates $\ast$/}
+
+
+
+Error code. 
+
+\mbox{\Hypertarget{main_8c_afcb352d4b5a59e9bb75e1b45255e48e4}\label{main_8c_afcb352d4b5a59e9bb75e1b45255e48e4}} 
+\index{main.c@{main.c}!I2C0\_NODE@{I2C0\_NODE}}
+\index{I2C0\_NODE@{I2C0\_NODE}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{I2C0\_NODE}{I2C0\_NODE}}
+{\footnotesize\ttfamily \#define I2\+C0\+\_\+\+NODE~DT\+\_\+\+NODELABEL(tc74)    /$\ast$I2C node ID$\ast$/}
+
+
+
+I2C node ID. 
+
+\mbox{\Hypertarget{main_8c_ad2d7c58e580911e70b3ecbb4ff4d757a}\label{main_8c_ad2d7c58e580911e70b3ecbb4ff4d757a}} 
+\index{main.c@{main.c}!I2CAddr@{I2CAddr}}
+\index{I2CAddr@{I2CAddr}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{I2CAddr}{I2CAddr}}
+{\footnotesize\ttfamily \#define I2\+CAddr~0x4D}
+
+
+
+I2C address of the TC74. 
+
+\mbox{\Hypertarget{main_8c_a5a0dba70a012086a1eae374caddb1197}\label{main_8c_a5a0dba70a012086a1eae374caddb1197}} 
+\index{main.c@{main.c}!LED0\_NID@{LED0\_NID}}
+\index{LED0\_NID@{LED0\_NID}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{LED0\_NID}{LED0\_NID}}
+{\footnotesize\ttfamily \#define LED0\+\_\+\+NID~DT\+\_\+\+NODELABEL(led0)}
+
+
+
+LED 0 node ID. 
+
+\mbox{\Hypertarget{main_8c_a46d2572ea49fee27d7069c2d5fb5ad9b}\label{main_8c_a46d2572ea49fee27d7069c2d5fb5ad9b}} 
+\index{main.c@{main.c}!LED1\_NID@{LED1\_NID}}
+\index{LED1\_NID@{LED1\_NID}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{LED1\_NID}{LED1\_NID}}
+{\footnotesize\ttfamily \#define LED1\+\_\+\+NID~DT\+\_\+\+NODELABEL(led1)}
+
+
+
+LED 1 node ID. 
+
+\mbox{\Hypertarget{main_8c_a97c722f212f8b56ba7ddf8d698193ddd}\label{main_8c_a97c722f212f8b56ba7ddf8d698193ddd}} 
+\index{main.c@{main.c}!LED2\_NID@{LED2\_NID}}
+\index{LED2\_NID@{LED2\_NID}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{LED2\_NID}{LED2\_NID}}
+{\footnotesize\ttfamily \#define LED2\+\_\+\+NID~DT\+\_\+\+NODELABEL(led2)}
+
+
+
+LED 2 node ID. 
+
+\mbox{\Hypertarget{main_8c_acebe9f3924154563f042c3adbd588d24}\label{main_8c_acebe9f3924154563f042c3adbd588d24}} 
+\index{main.c@{main.c}!LED3\_NID@{LED3\_NID}}
+\index{LED3\_NID@{LED3\_NID}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{LED3\_NID}{LED3\_NID}}
+{\footnotesize\ttfamily \#define LED3\+\_\+\+NID~DT\+\_\+\+NODELABEL(led3)}
+
+
+
+LED 3 node ID. 
+
+\mbox{\Hypertarget{main_8c_aabfdd434c3f5fc98789fd65dc741f3f5}\label{main_8c_aabfdd434c3f5fc98789fd65dc741f3f5}} 
+\index{main.c@{main.c}!MAIN\_SLEEP\_TIME\_MS@{MAIN\_SLEEP\_TIME\_MS}}
+\index{MAIN\_SLEEP\_TIME\_MS@{MAIN\_SLEEP\_TIME\_MS}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{MAIN\_SLEEP\_TIME\_MS}{MAIN\_SLEEP\_TIME\_MS}}
+{\footnotesize\ttfamily \#define MAIN\+\_\+\+SLEEP\+\_\+\+TIME\+\_\+\+MS~5000         /$\ast$ por causa da usart !!! analisar $\ast$/}
+
+
+
+Baudrate of the UART. 
+
+\mbox{\Hypertarget{main_8c_ab6426fc74901f4fbec94862ebb672b81}\label{main_8c_ab6426fc74901f4fbec94862ebb672b81}} 
+\index{main.c@{main.c}!RX\_TIMEOUT@{RX\_TIMEOUT}}
+\index{RX\_TIMEOUT@{RX\_TIMEOUT}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{RX\_TIMEOUT}{RX\_TIMEOUT}}
+{\footnotesize\ttfamily \#define RX\+\_\+\+TIMEOUT~1000                 /$\ast$ Inactivity period after the instant when last char was received that triggers an rx event (in us) $\ast$/}
+
+
+
+RX timeout. 
+
+\mbox{\Hypertarget{main_8c_a630686ccbe0cb17e592951055a5da582}\label{main_8c_a630686ccbe0cb17e592951055a5da582}} 
+\index{main.c@{main.c}!RXBUF\_SIZE@{RXBUF\_SIZE}}
+\index{RXBUF\_SIZE@{RXBUF\_SIZE}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{RXBUF\_SIZE}{RXBUF\_SIZE}}
+{\footnotesize\ttfamily \#define RXBUF\+\_\+\+SIZE~60                   /$\ast$ RX buffer size $\ast$/}
+
+
+
+RX buffer size. 
+
+\mbox{\Hypertarget{main_8c_a6423a880df59733d2d9b509c7718d3a9}\label{main_8c_a6423a880df59733d2d9b509c7718d3a9}} 
+\index{main.c@{main.c}!STACK\_SIZE@{STACK\_SIZE}}
+\index{STACK\_SIZE@{STACK\_SIZE}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{STACK\_SIZE}{STACK\_SIZE}}
+{\footnotesize\ttfamily \#define STACK\+\_\+\+SIZE~1024}
+
+
+
+Stack size of the threads. 
+
+\mbox{\Hypertarget{main_8c_a2ed7791f41bc6281906a0878492b0894}\label{main_8c_a2ed7791f41bc6281906a0878492b0894}} 
+\index{main.c@{main.c}!thread\_A\_period@{thread\_A\_period}}
+\index{thread\_A\_period@{thread\_A\_period}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{thread\_A\_period}{thread\_A\_period}}
+{\footnotesize\ttfamily \#define thread\+\_\+\+A\+\_\+period~1000}
+
+
+
+Period of the thread A. 
+
+\mbox{\Hypertarget{main_8c_a5936222e9802dbe8ceb1e99bd667466a}\label{main_8c_a5936222e9802dbe8ceb1e99bd667466a}} 
+\index{main.c@{main.c}!thread\_A\_prio@{thread\_A\_prio}}
+\index{thread\_A\_prio@{thread\_A\_prio}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{thread\_A\_prio}{thread\_A\_prio}}
+{\footnotesize\ttfamily \#define thread\+\_\+\+A\+\_\+prio~1 /$\ast$ 1-\/$>$ maior prooridade 2-\/$>$ menos prioridade$\ast$/}
+
+
+
+Priority of the threads. 
+
+\mbox{\Hypertarget{main_8c_a85e1e738201e8f4eef6266717bd5bd36}\label{main_8c_a85e1e738201e8f4eef6266717bd5bd36}} 
+\index{main.c@{main.c}!thread\_B\_period@{thread\_B\_period}}
+\index{thread\_B\_period@{thread\_B\_period}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{thread\_B\_period}{thread\_B\_period}}
+{\footnotesize\ttfamily \#define thread\+\_\+\+B\+\_\+period~1500}
+
+
+
+Period of the thread B. 
+
+\mbox{\Hypertarget{main_8c_aa9928aa4491a20c74a19c5904ba9530a}\label{main_8c_aa9928aa4491a20c74a19c5904ba9530a}} 
+\index{main.c@{main.c}!thread\_B\_prio@{thread\_B\_prio}}
+\index{thread\_B\_prio@{thread\_B\_prio}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{thread\_B\_prio}{thread\_B\_prio}}
+{\footnotesize\ttfamily \#define thread\+\_\+\+B\+\_\+prio~1 /$\ast$ 1-\/$>$ maior prooridade 2-\/$>$ menos prioridade$\ast$/}
+
+
+
+Priority of the threads. 
+
+\mbox{\Hypertarget{main_8c_ab012623edae6603682cdaf0eb0a220f2}\label{main_8c_ab012623edae6603682cdaf0eb0a220f2}} 
+\index{main.c@{main.c}!thread\_C\_period@{thread\_C\_period}}
+\index{thread\_C\_period@{thread\_C\_period}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{thread\_C\_period}{thread\_C\_period}}
+{\footnotesize\ttfamily \#define thread\+\_\+\+C\+\_\+period~2500}
+
+
+
+Period of the thread C. 
+
+\mbox{\Hypertarget{main_8c_a1bd72aae8d0dd6e887547a1d5e0a8902}\label{main_8c_a1bd72aae8d0dd6e887547a1d5e0a8902}} 
+\index{main.c@{main.c}!thread\_C\_prio@{thread\_C\_prio}}
+\index{thread\_C\_prio@{thread\_C\_prio}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{thread\_C\_prio}{thread\_C\_prio}}
+{\footnotesize\ttfamily \#define thread\+\_\+\+C\+\_\+prio~1 /$\ast$ 1-\/$>$ maior prooridade 2-\/$>$ menos prioridade$\ast$/}
+
+
+
+Priority of the threads. 
+
+\mbox{\Hypertarget{main_8c_a36ecc8fccd19047747e26bec4f67f68b}\label{main_8c_a36ecc8fccd19047747e26bec4f67f68b}} 
+\index{main.c@{main.c}!thread\_D\_period@{thread\_D\_period}}
+\index{thread\_D\_period@{thread\_D\_period}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{thread\_D\_period}{thread\_D\_period}}
+{\footnotesize\ttfamily \#define thread\+\_\+\+D\+\_\+period~2000}
+
+
+
+Period of the thread D. 
+
+\mbox{\Hypertarget{main_8c_a02433a30dac2e9bc252089790fc081e3}\label{main_8c_a02433a30dac2e9bc252089790fc081e3}} 
+\index{main.c@{main.c}!thread\_D\_prio@{thread\_D\_prio}}
+\index{thread\_D\_prio@{thread\_D\_prio}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{thread\_D\_prio}{thread\_D\_prio}}
+{\footnotesize\ttfamily \#define thread\+\_\+\+D\+\_\+prio~1 /$\ast$ 1-\/$>$ maior prooridade 2-\/$>$ menos prioridade$\ast$/}
+
+
+
+Priority of the threads. 
+
+\mbox{\Hypertarget{main_8c_a923af2d146f214e75816a7f5993cee29}\label{main_8c_a923af2d146f214e75816a7f5993cee29}} 
+\index{main.c@{main.c}!TXBUF\_SIZE@{TXBUF\_SIZE}}
+\index{TXBUF\_SIZE@{TXBUF\_SIZE}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{TXBUF\_SIZE}{TXBUF\_SIZE}}
+{\footnotesize\ttfamily \#define TXBUF\+\_\+\+SIZE~60                   /$\ast$ TX buffer size $\ast$/}
+
+
+
+TX buffer size. 
+
+\mbox{\Hypertarget{main_8c_a07b40c5bd9acc44f62a9182527dbcc9b}\label{main_8c_a07b40c5bd9acc44f62a9182527dbcc9b}} 
+\index{main.c@{main.c}!UART\_NODE@{UART\_NODE}}
+\index{UART\_NODE@{UART\_NODE}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{UART\_NODE}{UART\_NODE}}
+{\footnotesize\ttfamily \#define UART\+\_\+\+NODE~DT\+\_\+\+NODELABEL(uart0)   /$\ast$ UART0 node ID$\ast$/}
+
+
+
+UART node ID. 
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{main_8c_a89714abaf21dd16bd5321d0f3744c6f2}\label{main_8c_a89714abaf21dd16bd5321d0f3744c6f2}} 
+\index{main.c@{main.c}!butPressCBFunction@{butPressCBFunction}}
+\index{butPressCBFunction@{butPressCBFunction}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{butPressCBFunction()}{butPressCBFunction()}}
+{\footnotesize\ttfamily void but\+Press\+CBFunction (\begin{DoxyParamCaption}\item[{const struct device $\ast$}]{dev,  }\item[{struct gpio\+\_\+callback $\ast$}]{cb,  }\item[{uint32\+\_\+t}]{pins }\end{DoxyParamCaption})}
+
+
+
+Function to read the state of the buttons. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em dev} & Device struct \\
+\hline
+\mbox{\texttt{ in}}  & {\em cb} & Callback struct \\
+\hline
+\mbox{\texttt{ in}}  & {\em pins} & Pins \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{main_8c_a2126fe0d8ea0b8743c132b103e091fb9}\label{main_8c_a2126fe0d8ea0b8743c132b103e091fb9}} 
+\index{main.c@{main.c}!i2cConfig@{i2cConfig}}
+\index{i2cConfig@{i2cConfig}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{i2cConfig()}{i2cConfig()}}
+{\footnotesize\ttfamily void i2c\+Config (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+I2C initialization and configuration for TC74. 
+
+\begin{DoxyNote}{Note}
+This function initializes and configures the I2C for the temperature sensor 
+\end{DoxyNote}
+\mbox{\Hypertarget{main_8c_a2d3cbc477a2d2b1d993fb11d24461196}\label{main_8c_a2d3cbc477a2d2b1d993fb11d24461196}} 
+\index{main.c@{main.c}!ioConfig@{ioConfig}}
+\index{ioConfig@{ioConfig}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{ioConfig()}{ioConfig()}}
+{\footnotesize\ttfamily void io\+Config (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+IO configuration. 
+
+\begin{DoxyNote}{Note}
+This function configures the IOs 
+\end{DoxyNote}
+\mbox{\Hypertarget{main_8c_aa25f5f9092ccf13998f3cb9e9e1d10a6}\label{main_8c_aa25f5f9092ccf13998f3cb9e9e1d10a6}} 
+\index{main.c@{main.c}!K\_THREAD\_STACK\_DEFINE@{K\_THREAD\_STACK\_DEFINE}}
+\index{K\_THREAD\_STACK\_DEFINE@{K\_THREAD\_STACK\_DEFINE}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{K\_THREAD\_STACK\_DEFINE()}{K\_THREAD\_STACK\_DEFINE()}\hspace{0.1cm}{\footnotesize\ttfamily [1/4]}}
+{\footnotesize\ttfamily K\+\_\+\+THREAD\+\_\+\+STACK\+\_\+\+DEFINE (\begin{DoxyParamCaption}\item[{thread\+\_\+\+A\+\_\+stack}]{,  }\item[{\mbox{\hyperlink{main_8c_a6423a880df59733d2d9b509c7718d3a9}{STACK\+\_\+\+SIZE}}}]{ }\end{DoxyParamCaption})}
+
+
+
+Stack allocation for the threads. 
+
+\mbox{\Hypertarget{main_8c_a8318aa1ed5939244957a68387085ddec}\label{main_8c_a8318aa1ed5939244957a68387085ddec}} 
+\index{main.c@{main.c}!K\_THREAD\_STACK\_DEFINE@{K\_THREAD\_STACK\_DEFINE}}
+\index{K\_THREAD\_STACK\_DEFINE@{K\_THREAD\_STACK\_DEFINE}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{K\_THREAD\_STACK\_DEFINE()}{K\_THREAD\_STACK\_DEFINE()}\hspace{0.1cm}{\footnotesize\ttfamily [2/4]}}
+{\footnotesize\ttfamily K\+\_\+\+THREAD\+\_\+\+STACK\+\_\+\+DEFINE (\begin{DoxyParamCaption}\item[{thread\+\_\+\+B\+\_\+stack}]{,  }\item[{\mbox{\hyperlink{main_8c_a6423a880df59733d2d9b509c7718d3a9}{STACK\+\_\+\+SIZE}}}]{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{main_8c_a331fd55d9b95c3e662a4148fbc522271}\label{main_8c_a331fd55d9b95c3e662a4148fbc522271}} 
+\index{main.c@{main.c}!K\_THREAD\_STACK\_DEFINE@{K\_THREAD\_STACK\_DEFINE}}
+\index{K\_THREAD\_STACK\_DEFINE@{K\_THREAD\_STACK\_DEFINE}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{K\_THREAD\_STACK\_DEFINE()}{K\_THREAD\_STACK\_DEFINE()}\hspace{0.1cm}{\footnotesize\ttfamily [3/4]}}
+{\footnotesize\ttfamily K\+\_\+\+THREAD\+\_\+\+STACK\+\_\+\+DEFINE (\begin{DoxyParamCaption}\item[{thread\+\_\+\+C\+\_\+stack}]{,  }\item[{\mbox{\hyperlink{main_8c_a6423a880df59733d2d9b509c7718d3a9}{STACK\+\_\+\+SIZE}}}]{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{main_8c_a1aa340a38690690e42169ae37089ca8f}\label{main_8c_a1aa340a38690690e42169ae37089ca8f}} 
+\index{main.c@{main.c}!K\_THREAD\_STACK\_DEFINE@{K\_THREAD\_STACK\_DEFINE}}
+\index{K\_THREAD\_STACK\_DEFINE@{K\_THREAD\_STACK\_DEFINE}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{K\_THREAD\_STACK\_DEFINE()}{K\_THREAD\_STACK\_DEFINE()}\hspace{0.1cm}{\footnotesize\ttfamily [4/4]}}
+{\footnotesize\ttfamily K\+\_\+\+THREAD\+\_\+\+STACK\+\_\+\+DEFINE (\begin{DoxyParamCaption}\item[{thread\+\_\+\+D\+\_\+stack}]{,  }\item[{\mbox{\hyperlink{main_8c_a6423a880df59733d2d9b509c7718d3a9}{STACK\+\_\+\+SIZE}}}]{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{main_8c_a6288eba0f8e8ad3ab1544ad731eb7667}\label{main_8c_a6288eba0f8e8ad3ab1544ad731eb7667}} 
+\index{main.c@{main.c}!main@{main}}
+\index{main@{main}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{main()}{main()}}
+{\footnotesize\ttfamily void main (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption})}
+
+
+
+Main function. 
+
+\begin{DoxyNote}{Note}
+This function is the main function of the project 
+\end{DoxyNote}
+\mbox{\Hypertarget{main_8c_a61675a61bbec86901b2fe28f008e881c}\label{main_8c_a61675a61bbec86901b2fe28f008e881c}} 
+\index{main.c@{main.c}!thread\_A\_code@{thread\_A\_code}}
+\index{thread\_A\_code@{thread\_A\_code}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{thread\_A\_code()}{thread\_A\_code()}}
+{\footnotesize\ttfamily void thread\+\_\+\+A\+\_\+code (\begin{DoxyParamCaption}\item[{void $\ast$}]{argA,  }\item[{void $\ast$}]{argB,  }\item[{void $\ast$}]{argC }\end{DoxyParamCaption})}
+
+
+
+Thread A code prototype. 
+
+Thread A code implementation.
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em argA} & Argument A \\
+\hline
+\mbox{\texttt{ in}}  & {\em argB} & Argument B \\
+\hline
+\mbox{\texttt{ in}}  & {\em argC} & Argument C\\
+\hline
+\end{DoxyParams}
+\begin{DoxyNote}{Note}
+Este thread é responsável por atualizar o estado dos botões fisicos na RTDB 
+\end{DoxyNote}
+\mbox{\Hypertarget{main_8c_a99cef2c8673e9c73162dd97f0247ca8e}\label{main_8c_a99cef2c8673e9c73162dd97f0247ca8e}} 
+\index{main.c@{main.c}!thread\_B\_code@{thread\_B\_code}}
+\index{thread\_B\_code@{thread\_B\_code}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{thread\_B\_code()}{thread\_B\_code()}}
+{\footnotesize\ttfamily void thread\+\_\+\+B\+\_\+code (\begin{DoxyParamCaption}\item[{void $\ast$}]{argA,  }\item[{void $\ast$}]{argB,  }\item[{void $\ast$}]{argC }\end{DoxyParamCaption})}
+
+
+
+Thread B code prototype. 
+
+Thread B code implementation.
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em argA} & Argument A \\
+\hline
+\mbox{\texttt{ in}}  & {\em argB} & Argument B \\
+\hline
+\mbox{\texttt{ in}}  & {\em argC} & Argument C\\
+\hline
+\end{DoxyParams}
+\begin{DoxyNote}{Note}
+Este thread é responsável Ler os estado dos LEDs na RTDB e atualizar as saídas fisicas 
+\end{DoxyNote}
+\mbox{\Hypertarget{main_8c_a6eec62f04743b40b6d744ecd2f31cdd2}\label{main_8c_a6eec62f04743b40b6d744ecd2f31cdd2}} 
+\index{main.c@{main.c}!thread\_C\_code@{thread\_C\_code}}
+\index{thread\_C\_code@{thread\_C\_code}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{thread\_C\_code()}{thread\_C\_code()}}
+{\footnotesize\ttfamily void thread\+\_\+\+C\+\_\+code (\begin{DoxyParamCaption}\item[{void $\ast$}]{argA,  }\item[{void $\ast$}]{argB,  }\item[{void $\ast$}]{argC }\end{DoxyParamCaption})}
+
+
+
+Thread C code prototype. 
+
+Thread C code implementation.
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em argA} & Argument A \\
+\hline
+\mbox{\texttt{ in}}  & {\em argB} & Argument B \\
+\hline
+\mbox{\texttt{ in}}  & {\em argC} & Argument C\\
+\hline
+\end{DoxyParams}
+\begin{DoxyNote}{Note}
+Esta thread é responsável pela leitura e execução dos comandos do utilizador 
+\end{DoxyNote}
+\mbox{\Hypertarget{main_8c_a1a621f0dfdf57a438495482f571278e7}\label{main_8c_a1a621f0dfdf57a438495482f571278e7}} 
+\index{main.c@{main.c}!thread\_D\_code@{thread\_D\_code}}
+\index{thread\_D\_code@{thread\_D\_code}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{thread\_D\_code()}{thread\_D\_code()}}
+{\footnotesize\ttfamily void thread\+\_\+\+D\+\_\+code (\begin{DoxyParamCaption}\item[{void $\ast$}]{argA,  }\item[{void $\ast$}]{argB,  }\item[{void $\ast$}]{argC }\end{DoxyParamCaption})}
+
+
+
+Thread D code prototype. 
+
+Thread D code implementation.
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em argA} & Argument A \\
+\hline
+\mbox{\texttt{ in}}  & {\em argB} & Argument B \\
+\hline
+\mbox{\texttt{ in}}  & {\em argC} & Argument C\\
+\hline
+\end{DoxyParams}
+\begin{DoxyNote}{Note}
+Esta thread é responsável por atualizar periodicamente a RTDB com as informações do sensor de temperatura 
+\end{DoxyNote}
+\mbox{\Hypertarget{main_8c_a73d1de4649292bc8f0380d59d8551a4e}\label{main_8c_a73d1de4649292bc8f0380d59d8551a4e}} 
+\index{main.c@{main.c}!usartConfig@{usartConfig}}
+\index{usartConfig@{usartConfig}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{usartConfig()}{usartConfig()}}
+{\footnotesize\ttfamily void usart\+Config (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+UART initialization and configuration. 
+
+\begin{DoxyNote}{Note}
+This function initializes and configures the UART 
+\end{DoxyNote}
+
+
+\doxysubsection{Variable Documentation}
+\mbox{\Hypertarget{main_8c_aa79f0c8c90781e028a147ac093083f27}\label{main_8c_aa79f0c8c90781e028a147ac093083f27}} 
+\index{main.c@{main.c}!but@{but}}
+\index{but@{but}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{but}{but}}
+{\footnotesize\ttfamily volatile struct \mbox{\hyperlink{structstate__but}{state\+\_\+but}} but}
+
+
+
+Button state. 
+
+\mbox{\Hypertarget{main_8c_aa23f5d1ef65c1f2022f5ccd4327190c7}\label{main_8c_aa23f5d1ef65c1f2022f5ccd4327190c7}} 
+\index{main.c@{main.c}!but0\_dev@{but0\_dev}}
+\index{but0\_dev@{but0\_dev}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{but0\_dev}{but0\_dev}}
+{\footnotesize\ttfamily const struct gpio\+\_\+dt\+\_\+spec but0\+\_\+dev = GPIO\+\_\+\+DT\+\_\+\+SPEC\+\_\+\+GET(\mbox{\hyperlink{main_8c_a3e6e609a2c52824431254e9d3b722971}{BUT0\+\_\+\+NID}},gpios)}
+
+
+
+Button 0 device. 
+
+\mbox{\Hypertarget{main_8c_a67a470f16c010fc01b188dd790539f1b}\label{main_8c_a67a470f16c010fc01b188dd790539f1b}} 
+\index{main.c@{main.c}!but1\_dev@{but1\_dev}}
+\index{but1\_dev@{but1\_dev}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{but1\_dev}{but1\_dev}}
+{\footnotesize\ttfamily const struct gpio\+\_\+dt\+\_\+spec but1\+\_\+dev = GPIO\+\_\+\+DT\+\_\+\+SPEC\+\_\+\+GET(\mbox{\hyperlink{main_8c_af40d5b4c65a9e18b505875e6b257a982}{BUT1\+\_\+\+NID}},gpios)}
+
+
+
+Button 1 device. 
+
+\mbox{\Hypertarget{main_8c_a3700e6a0d8be99d845a4ec464e8b4377}\label{main_8c_a3700e6a0d8be99d845a4ec464e8b4377}} 
+\index{main.c@{main.c}!but2\_dev@{but2\_dev}}
+\index{but2\_dev@{but2\_dev}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{but2\_dev}{but2\_dev}}
+{\footnotesize\ttfamily const struct gpio\+\_\+dt\+\_\+spec but2\+\_\+dev = GPIO\+\_\+\+DT\+\_\+\+SPEC\+\_\+\+GET(\mbox{\hyperlink{main_8c_ae1f2d342dcf66e19932a404d506c6112}{BUT2\+\_\+\+NID}},gpios)}
+
+
+
+Button 2 device. 
+
+\mbox{\Hypertarget{main_8c_a64c0e22f57ea882c09250333be012335}\label{main_8c_a64c0e22f57ea882c09250333be012335}} 
+\index{main.c@{main.c}!but3\_dev@{but3\_dev}}
+\index{but3\_dev@{but3\_dev}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{but3\_dev}{but3\_dev}}
+{\footnotesize\ttfamily const struct gpio\+\_\+dt\+\_\+spec but3\+\_\+dev = GPIO\+\_\+\+DT\+\_\+\+SPEC\+\_\+\+GET(\mbox{\hyperlink{main_8c_abe9413c2139657d69099b5610f3e1ba4}{BUT3\+\_\+\+NID}},gpios)}
+
+
+
+Button 3 device. 
+
+\mbox{\Hypertarget{main_8c_a974c5afab9e21b41a6d9dd7825ef7b83}\label{main_8c_a974c5afab9e21b41a6d9dd7825ef7b83}} 
+\index{main.c@{main.c}!led@{led}}
+\index{led@{led}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{led}{led}}
+{\footnotesize\ttfamily volatile struct \mbox{\hyperlink{structstate__but}{state\+\_\+but}} led}
+
+
+
+LED state. 
+
+\mbox{\Hypertarget{main_8c_a289ba848a6f6b45b926a5f9a2b2353f5}\label{main_8c_a289ba848a6f6b45b926a5f9a2b2353f5}} 
+\index{main.c@{main.c}!led0\_dev@{led0\_dev}}
+\index{led0\_dev@{led0\_dev}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{led0\_dev}{led0\_dev}}
+{\footnotesize\ttfamily const struct gpio\+\_\+dt\+\_\+spec led0\+\_\+dev = GPIO\+\_\+\+DT\+\_\+\+SPEC\+\_\+\+GET(\mbox{\hyperlink{main_8c_a5a0dba70a012086a1eae374caddb1197}{LED0\+\_\+\+NID}},gpios)}
+
+
+
+LED 0 device. 
+
+\mbox{\Hypertarget{main_8c_a3d38d2995ef97f0703573cdf9efa65f5}\label{main_8c_a3d38d2995ef97f0703573cdf9efa65f5}} 
+\index{main.c@{main.c}!led1\_dev@{led1\_dev}}
+\index{led1\_dev@{led1\_dev}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{led1\_dev}{led1\_dev}}
+{\footnotesize\ttfamily const struct gpio\+\_\+dt\+\_\+spec led1\+\_\+dev = GPIO\+\_\+\+DT\+\_\+\+SPEC\+\_\+\+GET(\mbox{\hyperlink{main_8c_a46d2572ea49fee27d7069c2d5fb5ad9b}{LED1\+\_\+\+NID}},gpios)}
+
+
+
+LED 1 device. 
+
+\mbox{\Hypertarget{main_8c_a6bf2683c72f0a09b781c47556eecdb64}\label{main_8c_a6bf2683c72f0a09b781c47556eecdb64}} 
+\index{main.c@{main.c}!led2\_dev@{led2\_dev}}
+\index{led2\_dev@{led2\_dev}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{led2\_dev}{led2\_dev}}
+{\footnotesize\ttfamily const struct gpio\+\_\+dt\+\_\+spec led2\+\_\+dev = GPIO\+\_\+\+DT\+\_\+\+SPEC\+\_\+\+GET(\mbox{\hyperlink{main_8c_a97c722f212f8b56ba7ddf8d698193ddd}{LED2\+\_\+\+NID}},gpios)}
+
+
+
+LED 2 device. 
+
+\mbox{\Hypertarget{main_8c_a987a7cfc1150984e74413e565f4609b3}\label{main_8c_a987a7cfc1150984e74413e565f4609b3}} 
+\index{main.c@{main.c}!led3\_dev@{led3\_dev}}
+\index{led3\_dev@{led3\_dev}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{led3\_dev}{led3\_dev}}
+{\footnotesize\ttfamily const struct gpio\+\_\+dt\+\_\+spec led3\+\_\+dev = GPIO\+\_\+\+DT\+\_\+\+SPEC\+\_\+\+GET(\mbox{\hyperlink{main_8c_acebe9f3924154563f042c3adbd588d24}{LED3\+\_\+\+NID}},gpios)}
+
+
+
+LED 3 device. 
+
+\mbox{\Hypertarget{main_8c_a21fd29fcdf0cd666fc00ba6a476dc87d}\label{main_8c_a21fd29fcdf0cd666fc00ba6a476dc87d}} 
+\index{main.c@{main.c}!ledstat@{ledstat}}
+\index{ledstat@{ledstat}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{ledstat}{ledstat}}
+{\footnotesize\ttfamily volatile int ledstat = 0}
+
+\mbox{\Hypertarget{main_8c_a6d4412666e45fbd3d7bb2e537e3e4921}\label{main_8c_a6d4412666e45fbd3d7bb2e537e3e4921}} 
+\index{main.c@{main.c}!thread\_A\_data@{thread\_A\_data}}
+\index{thread\_A\_data@{thread\_A\_data}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{thread\_A\_data}{thread\_A\_data}}
+{\footnotesize\ttfamily struct k\+\_\+thread thread\+\_\+\+A\+\_\+data}
+
+
+
+Thread A data. 
+
+\mbox{\Hypertarget{main_8c_aaac68d6bd12397c115c8f5fb8b8dae16}\label{main_8c_aaac68d6bd12397c115c8f5fb8b8dae16}} 
+\index{main.c@{main.c}!thread\_A\_tid@{thread\_A\_tid}}
+\index{thread\_A\_tid@{thread\_A\_tid}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{thread\_A\_tid}{thread\_A\_tid}}
+{\footnotesize\ttfamily k\+\_\+tid\+\_\+t thread\+\_\+\+A\+\_\+tid}
+
+
+
+Thread A ID. 
+
+\mbox{\Hypertarget{main_8c_ad832c1a3de4a77b89216efc38eddcb72}\label{main_8c_ad832c1a3de4a77b89216efc38eddcb72}} 
+\index{main.c@{main.c}!thread\_B\_data@{thread\_B\_data}}
+\index{thread\_B\_data@{thread\_B\_data}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{thread\_B\_data}{thread\_B\_data}}
+{\footnotesize\ttfamily struct k\+\_\+thread thread\+\_\+\+B\+\_\+data}
+
+
+
+Thread B data. 
+
+\mbox{\Hypertarget{main_8c_af2bd9deb85bd5ac0cdf3a0b077411289}\label{main_8c_af2bd9deb85bd5ac0cdf3a0b077411289}} 
+\index{main.c@{main.c}!thread\_B\_tid@{thread\_B\_tid}}
+\index{thread\_B\_tid@{thread\_B\_tid}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{thread\_B\_tid}{thread\_B\_tid}}
+{\footnotesize\ttfamily k\+\_\+tid\+\_\+t thread\+\_\+\+B\+\_\+tid}
+
+
+
+Thread B ID. 
+
+\mbox{\Hypertarget{main_8c_a9723f8aa3cfd56015ee57bc31879f8ec}\label{main_8c_a9723f8aa3cfd56015ee57bc31879f8ec}} 
+\index{main.c@{main.c}!thread\_C\_data@{thread\_C\_data}}
+\index{thread\_C\_data@{thread\_C\_data}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{thread\_C\_data}{thread\_C\_data}}
+{\footnotesize\ttfamily struct k\+\_\+thread thread\+\_\+\+C\+\_\+data}
+
+
+
+Thread C data. 
+
+\mbox{\Hypertarget{main_8c_a3e9a231be3f7d1a28871ddfdf5ca8fe3}\label{main_8c_a3e9a231be3f7d1a28871ddfdf5ca8fe3}} 
+\index{main.c@{main.c}!thread\_C\_tid@{thread\_C\_tid}}
+\index{thread\_C\_tid@{thread\_C\_tid}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{thread\_C\_tid}{thread\_C\_tid}}
+{\footnotesize\ttfamily k\+\_\+tid\+\_\+t thread\+\_\+\+C\+\_\+tid}
+
+
+
+Thread C ID. 
+
+\mbox{\Hypertarget{main_8c_a91a7abf451804f293c55d5fc507cee31}\label{main_8c_a91a7abf451804f293c55d5fc507cee31}} 
+\index{main.c@{main.c}!thread\_D\_data@{thread\_D\_data}}
+\index{thread\_D\_data@{thread\_D\_data}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{thread\_D\_data}{thread\_D\_data}}
+{\footnotesize\ttfamily struct k\+\_\+thread thread\+\_\+\+D\+\_\+data}
+
+
+
+Thread D data. 
+
+\mbox{\Hypertarget{main_8c_ae130441eb06f8e1d532010c32c8fd15c}\label{main_8c_ae130441eb06f8e1d532010c32c8fd15c}} 
+\index{main.c@{main.c}!thread\_D\_tid@{thread\_D\_tid}}
+\index{thread\_D\_tid@{thread\_D\_tid}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{thread\_D\_tid}{thread\_D\_tid}}
+{\footnotesize\ttfamily k\+\_\+tid\+\_\+t thread\+\_\+\+D\+\_\+tid}
+
+
+
+Thread D ID. 
+
+\mbox{\Hypertarget{main_8c_acbbb8dc9e34f2cbd68792504dc18da81}\label{main_8c_acbbb8dc9e34f2cbd68792504dc18da81}} 
+\index{main.c@{main.c}!uart\_cfg@{uart\_cfg}}
+\index{uart\_cfg@{uart\_cfg}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{uart\_cfg}{uart\_cfg}}
+{\footnotesize\ttfamily const struct uart\+\_\+config uart\+\_\+cfg}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{= \{}
+\DoxyCodeLine{        .baudrate = 115200,}
+\DoxyCodeLine{        .parity = UART\_CFG\_PARITY\_NONE,}
+\DoxyCodeLine{        .stop\_bits = UART\_CFG\_STOP\_BITS\_1,}
+\DoxyCodeLine{        .data\_bits = UART\_CFG\_DATA\_BITS\_8,}
+\DoxyCodeLine{        .flow\_ctrl = UART\_CFG\_FLOW\_CTRL\_NONE}
+\DoxyCodeLine{\}}
+
+\end{DoxyCode}
+
+
+UART configuration struct. 
+
+\mbox{\Hypertarget{main_8c_a660f23134aaae43c9ff2c6096fa59342}\label{main_8c_a660f23134aaae43c9ff2c6096fa59342}} 
+\index{main.c@{main.c}!uart\_dev@{uart\_dev}}
+\index{uart\_dev@{uart\_dev}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{uart\_dev}{uart\_dev}}
+{\footnotesize\ttfamily const struct device$\ast$ uart\+\_\+dev = DEVICE\+\_\+\+DT\+\_\+\+GET(\mbox{\hyperlink{main_8c_a07b40c5bd9acc44f62a9182527dbcc9b}{UART\+\_\+\+NODE}})}
+
+
+
+UART device struct. 
+
+\mbox{\Hypertarget{main_8c_a7f447b32df78b68d1bd7a3581558ca3a}\label{main_8c_a7f447b32df78b68d1bd7a3581558ca3a}} 
+\index{main.c@{main.c}!uart\_rxbuf\_nchar@{uart\_rxbuf\_nchar}}
+\index{uart\_rxbuf\_nchar@{uart\_rxbuf\_nchar}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{uart\_rxbuf\_nchar}{uart\_rxbuf\_nchar}}
+{\footnotesize\ttfamily volatile int uart\+\_\+rxbuf\+\_\+nchar =0}
+
+
+
+RX buffer number of chars. 
+

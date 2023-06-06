@@ -1,20 +1,45 @@
+/**
+ * @file testrtdb.c
+ * 
+ * @brief Real Time Data Base test code
+ * 
+ * @version 1.0
+ * 
+ * @date 2021-06-06
+ * 
+ * @author Fernando Gandarinho e Tomás Silva
+*/
 #include <unity.h>
 #include "../src/rtdb/rtdb.h"
 
+/**
+ * @brief Tamanho do Buffer
+*/
 #define buf_size 60					/*defenir o tamanho de um bufLocal para testes locais*/
 
+/**
+ * @brief Inicialização do comando
+*/
 unsigned char sms[buf_size];		/*buf_local*/
+
 
 void setUp(void)
 {
 	return;
 }
+
 void tearDown(void)
 {
 	return;
 }
 
 /* Constroi a sms dentro deste módulo */
+/**
+ * @brief Função de inserção de comandos
+ * 
+ * @param[in] ptr_string Ponteiro para os comandos
+ * @param[in] size tamanho do comando
+*/
 void insertStrg(const char *ptr_string, int size)
 {
 	/*apaga o buffer local*/
@@ -35,7 +60,11 @@ void insertStrg(const char *ptr_string, int size)
 
 }
 
-
+/**
+ * @brief Função de teste dos comandos
+ * 
+ * @param[out] Resultado Resultado do teste
+*/
 void test_readSmsInBuf_Returns_vall_Ok(void)
 {
     insertStrg("# !",3);	
